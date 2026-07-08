@@ -92,7 +92,34 @@ const PROMPT_TEMPLATES = {
 async function callUniversalAI(apiKey: string, promptText: string): Promise<{ text: string, provider: string, model: string }> {
   const cleanKey = apiKey.trim();
 
-  // 1. Anthropic (Claude)
+  // 1. OpenRouter (Check first since keys start with sk-or-v1-)
+  if (cleanKey.startsWith("sk-or-v1-")) {
+    console.log("[Universal AI] Routing to OpenRouter Llama-3 Free...");
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${cleanKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://brewflow.ai",
+        "X-Title": "BrewFlow AI"
+      },
+      body: JSON.stringify({
+        model: "meta-llama/llama-3-8b-instruct:free",
+        messages: [{ role: "user", content: promptText }]
+      })
+    });
+    if (!response.ok) {
+      throw new Error(`OpenRouter returned error: ${response.status} - ${await response.text()}`);
+    }
+    const data = await response.json();
+    return {
+      text: data.choices?.[0]?.message?.content || "",
+      provider: "OpenRouter",
+      model: "llama-3-8b-free"
+    };
+  }
+
+  // 2. Anthropic (Claude)
   if (cleanKey.startsWith("sk-ant-")) {
     console.log("[Universal AI] Routing to Anthropic Claude 3.5 Sonnet...");
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -119,7 +146,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
     };
   }
 
-  // 2. Groq (Llama-3)
+  // 3. Groq (Llama-3)
   if (cleanKey.startsWith("gsk_")) {
     console.log("[Universal AI] Routing to Groq Llama-3...");
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -144,7 +171,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
     };
   }
 
-  // 3. OpenAI (GPT-4o)
+  // 4. OpenAI (GPT-4o)
   if (cleanKey.startsWith("sk-") || cleanKey.startsWith("sk-proj-")) {
     console.log("[Universal AI] Routing to OpenAI GPT-4o...");
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -169,7 +196,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
     };
   }
 
-  // 4. Default: Google Gemini
+  // 5. Default: Google Gemini
   console.log("[Universal AI] Routing to Google Gemini 1.5 Flash...");
   const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${cleanKey}`;
   const response = await fetch(geminiUrl, {
