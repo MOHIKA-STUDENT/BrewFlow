@@ -57,7 +57,7 @@ export default function Login() {
             <span className="text-gold-500">Keep every lead in motion.</span>
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Built for oat milk, coffee, bakery suppliers and every B2B brand selling into other businesses. Track leads, follow up on time, and never lose a warm prospect again.
+            Built for wholesale dairy, coffee, bakery suppliers and every B2B brand selling into other businesses. Track leads, follow up on time, and never lose a warm prospect again.
           </p>
         </div>
 

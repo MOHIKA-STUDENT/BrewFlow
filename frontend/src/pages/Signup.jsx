@@ -59,7 +59,7 @@ export default function Signup() {
             <span className="text-gold-500">Keep every lead in motion.</span>
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Built for oat milk, coffee, bakery suppliers and every B2B brand selling into other businesses. Track leads, follow up on time, and never lose a warm prospect again.
+            Built for wholesale dairy, coffee, bakery suppliers and every B2B brand selling into other businesses. Track leads, follow up on time, and never lose a warm prospect again.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function Signup() {
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
                   required
-                  placeholder="e.g. Oatish"
+                  placeholder="e.g. BrewCo"
                   className="w-full px-3.5 py-3 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#eff6ff]/30 focus:bg-white dark:bg-ink-950/40 dark:focus:bg-ink-950 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all placeholder:text-ink-300"
                 />
               </div>
@@ -111,7 +111,7 @@ export default function Signup() {
                   value={businessCategory}
                   onChange={(e) => setBusinessCategory(e.target.value)}
                   required
-                  placeholder="e.g. Oat Milk, Coffee Distributor"
+                  placeholder="e.g. Dairy, Coffee Distributor"
                   className="w-full px-3.5 py-3 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#eff6ff]/30 focus:bg-white dark:bg-ink-950/40 dark:focus:bg-ink-950 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all placeholder:text-ink-300"
                 />
               </div>

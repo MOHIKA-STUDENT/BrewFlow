@@ -15,7 +15,7 @@ export const mockLeads = [
     businessType: "Cafe",
     status: "Interested",
     nextFollowUp: "2026-07-10",
-    tags: ["oat-milk", "high-volume"],
+    tags: ["high-priority", "high-volume"],
   },
   {
     id: "2",

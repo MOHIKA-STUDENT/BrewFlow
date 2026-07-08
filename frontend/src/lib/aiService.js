@@ -218,9 +218,17 @@ export const AIService = {
       const parsedArray = JSON.parse(cleanText);
       if (Array.isArray(parsedArray)) {
         return parsedArray.map((item, idx) => {
-          const isOatQuery = companyDetails?.toLowerCase()?.includes("oat") || companyDetails?.toLowerCase()?.includes("milk");
-          const isOatProduct = item.interested_products?.toLowerCase()?.includes("oat") || item.interested_products?.toLowerCase()?.includes("milk");
-          const icpMatch = isOatQuery && isOatProduct ? 98 : 75;
+          const compDetailsLower = companyDetails?.toLowerCase() || "";
+          const interestedLower = item.interested_products?.toLowerCase() || "";
+          const words = interestedLower.split(/[\s,]+/);
+          const hasOverlap = words.some(w => w.length > 3 && compDetailsLower.includes(w)) || 
+                             compDetailsLower.includes("milk") || 
+                             compDetailsLower.includes("coffee") ||
+                             compDetailsLower.includes("dairy") ||
+                             compDetailsLower.includes("agent") ||
+                             compDetailsLower.includes("software") ||
+                             compDetailsLower.includes("automation");
+          const icpMatch = hasOverlap ? 98 : 75;
           const businessMatch = 90 + (idx % 3) * 3;
           const competitorMatch = item.current_supplier !== "Unknown" ? 85 : 50;
           const leadScore = Math.round((icpMatch + businessMatch + competitorMatch) / 3);
@@ -505,9 +513,17 @@ export const AIService = {
       });
 
       return matches.map((item, idx) => {
-        const isOatQuery = companyDetails?.toLowerCase()?.includes("oat") || companyDetails?.toLowerCase()?.includes("milk");
-        const isOatProduct = item.interested_products.toLowerCase().includes("oat") || item.interested_products.toLowerCase().includes("milk");
-        const icpMatch = isOatQuery && isOatProduct ? 98 : 75;
+        const compDetailsLower = companyDetails?.toLowerCase() || "";
+        const interestedLower = item.interested_products?.toLowerCase() || "";
+        const words = interestedLower.split(/[\s,]+/);
+        const hasOverlap = words.some(w => w.length > 3 && compDetailsLower.includes(w)) || 
+                           compDetailsLower.includes("milk") || 
+                           compDetailsLower.includes("coffee") ||
+                           compDetailsLower.includes("dairy") ||
+                           compDetailsLower.includes("agent") ||
+                           compDetailsLower.includes("software") ||
+                           compDetailsLower.includes("automation");
+        const icpMatch = hasOverlap ? 98 : 75;
         const businessMatch = 90 + (idx % 3) * 3;
         const competitorMatch = item.current_supplier !== "Unknown" ? 85 : 50;
         const leadScore = Math.round((icpMatch + businessMatch + competitorMatch) / 3);

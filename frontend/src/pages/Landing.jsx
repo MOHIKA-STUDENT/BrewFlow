@@ -303,7 +303,7 @@ export default function Landing({ theme, onToggleTheme }) {
                 </p>
                 <div className="flex justify-center lg:justify-start gap-8 items-center opacity-70 grayscale dark:invert">
                   <div className="flex items-center gap-1 font-display font-bold tracking-tight text-xs text-[#14213d]">
-                    <Coffee size={14} className="text-[#d8a64c]" /> OATISH
+                    <Coffee size={14} className="text-[#d8a64c]" /> DAIRY CO.
                   </div>
                   <div className="flex items-center gap-1 font-display font-bold tracking-tight text-xs text-[#14213d]">
                     <Package size={14} className="text-[#d8a64c]" /> BEANERY CO.
@@ -436,7 +436,7 @@ export default function Landing({ theme, onToggleTheme }) {
                     <span className="text-[9px] font-mono uppercase tracking-widest text-[#d8a64c] font-bold">AI outreach builder</span>
                   </div>
                   <p className="text-[9px] text-[#beb7a7] leading-relaxed italic">
-                    "Hi Central Roast team, noticed you run a specialty coffee bar in Chicago. We supply certified organic oat milk..."
+                    "Hi Central Roast team, noticed you run a specialty coffee bar in Chicago. We supply fresh wholesale milk..."
                   </p>
                   <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/5">
                     <span className="text-[8px] font-mono text-white/40">Powered by Gemini</span>

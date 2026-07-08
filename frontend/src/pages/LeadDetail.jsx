@@ -308,7 +308,7 @@ export default function LeadDetail() {
                   value={form.interested_products}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
-                  placeholder="e.g. Oat Milk, Coffee Beans"
+                  placeholder="e.g. Whole Milk, Coffee Beans"
                 />
               </div>
             </div>
