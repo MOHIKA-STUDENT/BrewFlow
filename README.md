@@ -137,12 +137,14 @@ create table if not exists public.ai_generations (
 alter table public.ai_generations enable row level security;
 
 -- 3. Create RLS policies (Isolated per organization owner)
+drop policy if exists "Users can view their own org's AI generations" on public.ai_generations;
 create policy "Users can view their own org's AI generations"
   on public.ai_generations for select
   using (
     organization_id in (select id from public.organizations where owner_id = auth.uid())
   );
 
+drop policy if exists "Users can insert their own org's AI generations" on public.ai_generations;
 create policy "Users can insert their own org's AI generations"
   on public.ai_generations for insert
   with check (
