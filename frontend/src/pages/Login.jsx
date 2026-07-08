@@ -91,7 +91,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="you@company.com"
-                  className="w-full px-3.5 py-3 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#eff6ff]/30 focus:bg-white dark:bg-ink-950/40 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all placeholder:text-ink-300"
+                  className="w-full px-3.5 py-3 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#eff6ff]/30 focus:bg-white dark:bg-ink-950/40 dark:focus:bg-ink-950 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all placeholder:text-ink-300"
                 />
               </div>
 
@@ -105,7 +105,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full px-3.5 py-3 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#eff6ff]/30 focus:bg-white dark:bg-ink-950/40 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all placeholder:text-ink-300"
+                  className="w-full px-3.5 py-3 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#eff6ff]/30 focus:bg-white dark:bg-ink-950/40 dark:focus:bg-ink-950 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all placeholder:text-ink-300"
                 />
               </div>
 
