@@ -14,7 +14,6 @@ import {
   MapPin,
   Calendar,
   Layers,
-  ChevronRight,
   TrendingUp,
   Briefcase,
   User,
@@ -144,19 +143,19 @@ export default function LeadDetail() {
   const getActivityIcon = (type) => {
     switch (type) {
       case "created":
-        return <Plus size={14} className="text-moss-500" />;
+        return <Plus size={13} className="text-[#5b7553]" />;
       case "status_changed":
-        return <RefreshCw size={14} className="text-gold-500" />;
+        return <RefreshCw size={12} className="text-[#d8a64c]" />;
       case "note_added":
-        return <FileText size={14} className="text-ink-500 dark:text-ink-300" />;
+        return <FileText size={12} className="text-slate-500" />;
       case "call_logged":
-        return <Phone size={14} className="text-sky-500" />;
+        return <Phone size={12} className="text-blue-500" />;
       case "sample_sent":
-        return <Package size={14} className="text-purple-500" />;
+        return <Package size={12} className="text-purple-500" />;
       case "deleted":
-        return <Trash2 size={14} className="text-coral-500" />;
+        return <Trash2 size={12} className="text-[#e06656]" />;
       default:
-        return <Activity size={14} className="text-ink-500" />;
+        return <Activity size={12} className="text-slate-500" />;
     }
   };
 
@@ -167,9 +166,9 @@ export default function LeadDetail() {
       case "status_changed":
         return (
           <span>
-            Status updated: <span className="font-mono text-xs font-semibold px-1 py-0.5 rounded bg-ink-100 dark:bg-ink-800 text-ink-900 dark:text-paper-100">{act.old_value}</span>
+            Status changed: <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-[#beb7a7]">{act.old_value}</span>
             {" → "}
-            <span className="font-mono text-xs font-semibold px-1 py-0.5 rounded bg-gold-500/10 text-gold-600 dark:text-gold-400">{act.new_value}</span>
+            <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded bg-[#d8a64c]/10 border border-[#d8a64c]/20 text-[#d8a64c]">{act.new_value}</span>
           </span>
         );
       case "note_added":
@@ -186,45 +185,50 @@ export default function LeadDetail() {
   };
 
   if (loading) {
-    return <p className="text-sm text-ink-500 dark:text-ink-300">Loading lead details…</p>;
+    return (
+      <div className="flex items-center gap-2 text-xs text-[#14213d]/60 dark:text-[#beb7a7]/60 p-8">
+        <div className="w-4 h-4 rounded-full border-2 border-t-[#d8a64c] border-[#14213d]/10 dark:border-white/10 animate-spin"></div>
+        <span>Querying lead details profile...</span>
+      </div>
+    );
   }
 
   if (error && !lead) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-coral-500 bg-coral-100 dark:bg-coral-500/15 rounded-lg px-3 py-2">{error}</p>
-        <Link to="/leads" className="inline-flex items-center gap-2 text-sm text-gold-600 dark:text-gold-400 font-medium">
-          <ArrowLeft size={16} /> Back to Leads
+        <p className="text-xs text-[#e06656] bg-[#e06656]/10 rounded-xl px-3 py-2 border border-[#e06656]/20 font-semibold">{error}</p>
+        <Link to="/leads" className="inline-flex items-center gap-1.5 text-xs text-[#d8a64c] font-bold uppercase tracking-wider">
+          <ArrowLeft size={14} /> Back to Leads
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-body selection:bg-[#d8a64c] selection:text-white">
       
       {/* 1. Header Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-ink-100 dark:border-ink-800 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#14213d]/5 dark:border-white/5 pb-5">
         <div className="space-y-1.5">
-          <Link to="/leads" className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-500 dark:text-ink-300 hover:text-ink-900 dark:hover:text-paper-100 transition-colors">
-            <ArrowLeft size={12} /> Back to Leads
+          <Link to="/leads" className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#14213d]/50 dark:text-[#beb7a7]/50 hover:text-[#d8a64c] transition-colors">
+            <ArrowLeft size={11} /> Back to Leads
           </Link>
           <div className="flex items-center gap-3">
-            <h1 className="font-display font-bold text-2xl text-ink-900 dark:text-paper-50 leading-tight">
+            <h1 className="font-display font-extrabold text-2xl text-[#14213d] dark:text-[#f9fafb] tracking-tight">
               {lead.business_name}
             </h1>
             <StatusPill status={lead.status} />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Quick status select */}
-          <div className="flex items-center gap-1.5 bg-paper-50 dark:bg-ink-900 border border-ink-100 dark:border-ink-800 rounded-lg px-2.5 py-1.5">
-            <span className="text-[10px] uppercase font-mono tracking-wider text-ink-500">Pipeline Status</span>
+          <div className="flex items-center gap-1.5 bg-[#f8f7f4] dark:bg-[#111827] border border-[#14213d]/5 dark:border-white/10 rounded-xl px-3.5 py-2 shadow-inner">
+            <span className="text-[9px] uppercase font-mono tracking-wider text-slate-400 font-bold">Status</span>
             <select
               value={lead.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="bg-transparent border-none text-xs font-semibold outline-none text-ink-900 dark:text-paper-100 cursor-pointer pr-1"
+              className="bg-transparent border-none text-xs font-bold outline-none text-[#14213d] dark:text-[#f9fafb] cursor-pointer pr-1"
             >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>{s}</option>
@@ -234,31 +238,32 @@ export default function LeadDetail() {
 
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-ink-100 dark:border-ink-800 hover:bg-ink-100/60 dark:hover:bg-ink-800/60 transition-colors text-xs font-medium"
+            className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-all text-xs font-bold uppercase tracking-wider text-[#14213d] dark:text-white"
           >
             {isEditing ? (
               <>
-                <ArrowLeft size={14} /> Cancel
+                Cancel
               </>
             ) : (
               <>
-                <Pencil size={14} /> Edit profile
+                <Pencil size={13} className="text-[#d8a64c]" />
+                <span>Edit profile</span>
               </>
             )}
           </button>
 
           <button
             onClick={handleDelete}
-            className="p-2 rounded-lg border border-ink-100 dark:border-ink-800 hover:border-coral-500/50 hover:bg-coral-500/10 text-ink-500 hover:text-coral-500 transition-colors"
+            className="p-2.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 hover:border-[#e06656]/50 hover:bg-[#e06656]/10 text-slate-400 hover:text-[#e06656] transition-all cursor-pointer"
             title="Delete Lead"
           >
-            <Trash2 size={15} />
+            <Trash2 size={14} />
           </button>
         </div>
       </div>
 
       {error && (
-        <p className="text-sm text-coral-500 bg-coral-100 dark:bg-coral-500/15 rounded-lg px-3 py-2">{error}</p>
+        <p className="text-xs text-[#e06656] bg-[#e06656]/10 rounded-xl px-3 py-2 border border-[#e06656]/20 font-semibold">{error}</p>
       )}
 
       {/* 2. Main Columns */}
@@ -269,12 +274,12 @@ export default function LeadDetail() {
           <form onSubmit={handleSave} className="space-y-6">
             
             {/* Group 1: Company Profile */}
-            <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-5 space-y-4">
-              <h2 className="font-display font-semibold text-sm text-ink-900 dark:text-paper-100 flex items-center gap-1.5 border-b border-ink-100 dark:border-ink-800 pb-2">
-                <Briefcase size={15} className="text-gold-500" /> Company Profile
+            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-5 space-y-4 shadow-sm backdrop-blur-md">
+              <h2 className="font-display font-bold text-xs text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider flex items-center gap-2 border-b border-[#14213d]/5 dark:border-white/5 pb-2.5">
+                <Briefcase size={14} className="text-[#d8a64c]" /> Company Profile
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
                 <DetailField
                   label="Business name"
                   name="business_name"
@@ -289,7 +294,7 @@ export default function LeadDetail() {
                   value={form.business_type}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
-                  placeholder="e.g. Specialty Cafe, Bakery, Hotel"
+                  placeholder="e.g. Specialty Cafe, Bakery"
                 />
                 <DetailField
                   label="Current Supplier"
@@ -297,7 +302,7 @@ export default function LeadDetail() {
                   value={form.current_supplier}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
-                  placeholder="e.g. Sysco, Local Roaster Co."
+                  placeholder="e.g. Sysco, Local supplier"
                 />
                 <DetailField
                   label="Interested Products"
@@ -311,12 +316,12 @@ export default function LeadDetail() {
             </div>
 
             {/* Group 2: Contact Info */}
-            <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-5 space-y-4">
-              <h2 className="font-display font-semibold text-sm text-ink-900 dark:text-paper-100 flex items-center gap-1.5 border-b border-ink-100 dark:border-ink-800 pb-2">
-                <User size={15} className="text-gold-500" /> Contact & Links
+            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-5 space-y-4 shadow-sm backdrop-blur-md">
+              <h2 className="font-display font-bold text-xs text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider flex items-center gap-2 border-b border-[#14213d]/5 dark:border-white/5 pb-2.5">
+                <User size={14} className="text-[#d8a64c]" /> Contact & Links
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
                 <DetailField
                   label="Contact Person"
                   name="contact_person"
@@ -355,7 +360,7 @@ export default function LeadDetail() {
                   placeholder="e.g. www.cafe.com"
                   renderView={(val) =>
                     val ? (
-                      <a href={val.startsWith("http") ? val : `https://${val}`} target="_blank" rel="noreferrer" className="text-gold-600 dark:text-gold-400 hover:underline flex items-center gap-1 mt-1 text-sm font-medium">
+                      <a href={val.startsWith("http") ? val : `https://${val}`} target="_blank" rel="noreferrer" className="text-[#d8a64c] hover:underline flex items-center gap-1 mt-1 text-xs font-bold">
                         <Globe size={13} /> {val}
                       </a>
                     ) : "—"
@@ -370,7 +375,7 @@ export default function LeadDetail() {
                   placeholder="e.g. @cafehandle"
                   renderView={(val) =>
                     val ? (
-                      <a href={`https://instagram.com/${val.replace("@", "")}`} target="_blank" rel="noreferrer" className="text-gold-600 dark:text-gold-400 hover:underline flex items-center gap-1 mt-1 text-sm font-medium">
+                      <a href={`https://instagram.com/${val.replace("@", "")}`} target="_blank" rel="noreferrer" className="text-[#d8a64c] hover:underline flex items-center gap-1 mt-1 text-xs font-bold">
                         <Globe size={13} /> {val}
                       </a>
                     ) : "—"
@@ -386,8 +391,8 @@ export default function LeadDetail() {
                     placeholder="e.g. https://maps.google.com/..."
                     renderView={(val) =>
                       val ? (
-                        <a href={val} target="_blank" rel="noreferrer" className="text-gold-600 dark:text-gold-400 hover:underline flex items-center gap-1 mt-1 text-sm font-medium truncate max-w-md">
-                          <MapPin size={13} /> View on Google Maps
+                        <a href={val} target="_blank" rel="noreferrer" className="text-[#d8a64c] hover:underline flex items-center gap-1 mt-1 text-xs font-bold truncate max-w-xs md:max-w-md block">
+                          <MapPin size={13} className="inline mr-1" /> View on Google Maps
                         </a>
                       ) : "—"
                     }
@@ -411,19 +416,19 @@ export default function LeadDetail() {
             </div>
 
             {/* Group 3: Sales Metrics */}
-            <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-5 space-y-4">
-              <h2 className="font-display font-semibold text-sm text-ink-900 dark:text-paper-100 flex items-center gap-1.5 border-b border-ink-100 dark:border-ink-800 pb-2">
-                <TrendingUp size={15} className="text-gold-500" /> Sales Metrics & Schedules
+            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-5 space-y-4 shadow-sm backdrop-blur-md">
+              <h2 className="font-display font-bold text-xs text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider flex items-center gap-2 border-b border-[#14213d]/5 dark:border-white/5 pb-2.5">
+                <TrendingUp size={14} className="text-[#d8a64c]" /> Sales Metrics & Schedules
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
                 <DetailField
                   label="Est. Monthly Consumption"
                   name="estimated_monthly_consumption"
                   value={form.estimated_monthly_consumption}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
-                  placeholder="e.g. 50kg, 12 cases"
+                  placeholder="e.g. 80kg"
                 />
                 <DetailField
                   label="Potential Monthly Revenue ($)"
@@ -432,9 +437,9 @@ export default function LeadDetail() {
                   value={form.potential_monthly_revenue}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
-                  placeholder="e.g. 1500"
+                  placeholder="e.g. 2400"
                   renderView={(val) => (
-                    <span className="font-mono text-sm font-semibold">
+                    <span className="font-mono text-xs font-bold text-[#14213d] dark:text-[#f9fafb]">
                       {val ? `$${Number(val).toLocaleString()}` : "—"}
                     </span>
                   )}
@@ -445,7 +450,7 @@ export default function LeadDetail() {
                   value={form.lead_source}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
-                  placeholder="e.g. Cold Call, Instagram, Referral"
+                  placeholder="e.g. Cold Outbound"
                 />
                 <DetailField
                   label="First Contact Date"
@@ -455,7 +460,7 @@ export default function LeadDetail() {
                   isEditing={isEditing}
                   onChange={handleFieldChange}
                   renderView={(val) => (
-                    <span className="font-mono text-xs flex items-center gap-1 mt-1 text-ink-600 dark:text-ink-300">
+                    <span className="font-mono text-xs flex items-center gap-1 mt-1 text-[#14213d]/60 dark:text-[#beb7a7]/60">
                       <Calendar size={13} /> {val || "—"}
                     </span>
                   )}
@@ -468,7 +473,7 @@ export default function LeadDetail() {
                   isEditing={isEditing}
                   onChange={handleFieldChange}
                   renderView={(val) => (
-                    <span className="font-mono text-xs flex items-center gap-1 mt-1 text-ink-600 dark:text-ink-300">
+                    <span className="font-mono text-xs flex items-center gap-1 mt-1 text-[#14213d]/60 dark:text-[#beb7a7]/60">
                       <Calendar size={13} /> {val || "—"}
                     </span>
                   )}
@@ -477,12 +482,12 @@ export default function LeadDetail() {
             </div>
 
             {/* Group 4: Notes */}
-            <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-5 space-y-4">
-              <h2 className="font-display font-semibold text-sm text-ink-900 dark:text-paper-100 flex items-center gap-1.5 border-b border-ink-100 dark:border-ink-800 pb-2">
-                <FileCode size={15} className="text-gold-500" /> Additional Notes
+            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-5 space-y-4 shadow-sm backdrop-blur-md">
+              <h2 className="font-display font-bold text-xs text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider flex items-center gap-2 border-b border-[#14213d]/5 dark:border-white/5 pb-2.5">
+                <FileCode size={14} className="text-[#d8a64c]" /> Additional Notes
               </h2>
 
-              <div className="space-y-4">
+              <div className="space-y-4.5">
                 <DetailField
                   label="General Notes"
                   name="general_notes"
@@ -503,23 +508,23 @@ export default function LeadDetail() {
             </div>
 
             {isEditing && (
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => {
                     setForm(lead);
                     setIsEditing(false);
                   }}
-                  className="px-4 py-2.5 rounded-lg text-sm font-medium border border-ink-100 dark:border-ink-800 hover:bg-ink-100/60 dark:hover:bg-ink-800/60 text-ink-500"
+                  className="px-4.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border border-[#14213d]/10 dark:border-white/10 hover:bg-[#14213d]/5 dark:hover:bg-white/5 text-slate-500"
                 >
                   Discard Changes
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gold-500 hover:bg-gold-400 text-ink-950 text-sm font-semibold shadow disabled:opacity-60"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#d8a64c] hover:bg-[#c19036] text-white text-xs font-bold uppercase tracking-wider shadow disabled:opacity-60 border-none cursor-pointer"
                 >
-                  <Save size={16} /> {saving ? "Saving…" : "Save Changes"}
+                  <Save size={15} /> <span>{saving ? "Saving…" : "Save Changes"}</span>
                 </button>
               </div>
             )}
@@ -530,20 +535,20 @@ export default function LeadDetail() {
         <div className="lg:col-span-5 space-y-6">
           
           {/* Quick Action Box */}
-          <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-5 space-y-4">
-            <h3 className="font-display font-semibold text-sm text-ink-900 dark:text-paper-100 flex items-center gap-1.5 pb-2 border-b border-ink-100 dark:border-ink-800">
-              <Layers size={15} className="text-gold-500" /> Log Interactions
+          <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-5 space-y-4 shadow-sm backdrop-blur-md">
+            <h3 className="font-display font-bold text-xs text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider flex items-center gap-2 pb-2.5 border-b border-[#14213d]/5 dark:border-white/5">
+              <Layers size={14} className="text-[#d8a64c]" /> Log Interactions
             </h3>
 
-            {/* Quick Action Tabs */}
-            <div className="flex bg-paper-100 dark:bg-ink-950 p-1 rounded-lg text-xs font-semibold">
+            {/* Vercel-style Quick Action Tabs */}
+            <div className="flex bg-[#ebe8de]/50 dark:bg-ink-950 p-1 rounded-xl border border-[#14213d]/5 dark:border-white/5 text-xs font-bold uppercase tracking-wider">
               <button
                 type="button"
                 onClick={() => setActiveTab("note")}
-                className={`flex-1 py-1.5 rounded-md transition-colors flex justify-center items-center gap-1 ${
+                className={`flex-1 py-2 rounded-lg transition-all flex justify-center items-center gap-1.5 cursor-pointer text-[10px] ${
                   activeTab === "note"
-                    ? "bg-paper-50 dark:bg-ink-900 text-ink-900 dark:text-paper-50 shadow-sm"
-                    : "text-ink-500 hover:text-ink-900 dark:hover:text-paper-100"
+                    ? "bg-white dark:bg-[#111827] text-[#14213d] dark:text-[#f9fafb] shadow-sm font-extrabold"
+                    : "text-[#14213d]/50 dark:text-[#beb7a7]/50 hover:text-[#14213d] dark:hover:text-white"
                 }`}
               >
                 <FileText size={12} /> Note
@@ -551,28 +556,28 @@ export default function LeadDetail() {
               <button
                 type="button"
                 onClick={() => setActiveTab("call")}
-                className={`flex-1 py-1.5 rounded-md transition-colors flex justify-center items-center gap-1 ${
+                className={`flex-1 py-2 rounded-lg transition-all flex justify-center items-center gap-1.5 cursor-pointer text-[10px] ${
                   activeTab === "call"
-                    ? "bg-paper-50 dark:bg-ink-900 text-ink-900 dark:text-paper-50 shadow-sm"
-                    : "text-ink-500 hover:text-ink-900 dark:hover:text-paper-100"
+                    ? "bg-white dark:bg-[#111827] text-[#14213d] dark:text-[#f9fafb] shadow-sm font-extrabold"
+                    : "text-[#14213d]/50 dark:text-[#beb7a7]/50 hover:text-[#14213d] dark:hover:text-white"
                 }`}
               >
-                <Phone size={12} /> Call log
+                <Phone size={12} /> Call
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("sample")}
-                className={`flex-1 py-1.5 rounded-md transition-colors flex justify-center items-center gap-1 ${
+                className={`flex-1 py-2 rounded-lg transition-all flex justify-center items-center gap-1.5 cursor-pointer text-[10px] ${
                   activeTab === "sample"
-                    ? "bg-paper-50 dark:bg-ink-900 text-ink-900 dark:text-paper-50 shadow-sm"
-                    : "text-ink-500 hover:text-ink-900 dark:hover:text-paper-100"
+                    ? "bg-white dark:bg-[#111827] text-[#14213d] dark:text-[#f9fafb] shadow-sm font-extrabold"
+                    : "text-[#14213d]/50 dark:text-[#beb7a7]/50 hover:text-[#14213d] dark:hover:text-white"
                 }`}
               >
-                <Package size={12} /> Sample sent
+                <Package size={12} /> Sample
               </button>
             </div>
 
-            <form onSubmit={handleLogQuickAction} className="space-y-3">
+            <form onSubmit={handleLogQuickAction} className="space-y-3.5">
               <textarea
                 value={quickNotes}
                 onChange={(e) => setQuickNotes(e.target.value)}
@@ -580,18 +585,18 @@ export default function LeadDetail() {
                   activeTab === "note"
                     ? "Add a general internal note (e.g. met owner at coffee show)..."
                     : activeTab === "call"
-                    ? "Summary of call outcome (e.g. called founder, sent pricing deck, likes current supplier)..."
-                    : "Details of sample sent (e.g. dispatched 1 bag medium roast + 2L oat milk)..."
+                    ? "Summary of call outcome (e.g. called founder, sent pricing deck)..."
+                    : "Details of sample sent (e.g. dispatched 1 bag medium roast + catalog)..."
                 }
                 rows={3}
                 required
-                className="w-full px-3 py-2.5 rounded-lg border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 text-xs sm:text-sm outline-none focus:border-gold-500 text-ink-900 dark:text-paper-100 placeholder:text-ink-300"
+                className="w-full p-4 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] placeholder:text-slate-400 font-sans resize-none"
               />
               <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={logging || !quickNotes.trim()}
-                  className="px-4 py-2 rounded-lg bg-gold-500 text-ink-950 text-xs font-semibold hover:bg-gold-400 transition-colors disabled:opacity-60 shadow"
+                  className="px-4.5 py-2 rounded-xl bg-[#d8a64c] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#c19036] transition-all disabled:opacity-60 shadow border-none cursor-pointer"
                 >
                   {logging ? "Logging…" : activeTab === "note" ? "Save Note" : activeTab === "call" ? "Log Call" : "Log Sample"}
                 </button>
@@ -599,36 +604,36 @@ export default function LeadDetail() {
             </form>
           </div>
 
-          {/* Activity Timeline */}
-          <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-5 space-y-4">
-            <h3 className="font-display font-semibold text-sm text-ink-900 dark:text-paper-100 flex items-center gap-1.5 pb-2 border-b border-ink-100 dark:border-ink-800">
-              <Activity size={15} className="text-gold-500" /> Timeline & Events
+          {/* Activity Timeline (Linear style) */}
+          <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-5 space-y-4 shadow-sm backdrop-blur-md">
+            <h3 className="font-display font-bold text-xs text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider flex items-center gap-2 pb-2.5 border-b border-[#14213d]/5 dark:border-white/5">
+              <Activity size={14} className="text-[#d8a64c]" /> Timeline & Events
             </h3>
 
             {activity.length === 0 ? (
-              <p className="text-xs text-ink-500 dark:text-ink-300 py-6 text-center">No timeline activity logged.</p>
+              <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/50 py-6 text-center">No timeline activity logged.</p>
             ) : (
-              <div className="relative pl-6 border-l border-ink-100 dark:border-ink-800 space-y-6">
+              <div className="relative pl-5 border-l border-[#14213d]/10 dark:border-white/10 space-y-6">
                 {activity.map((act) => (
-                  <div key={act.id} className="relative space-y-1">
+                  <div key={act.id} className="relative space-y-1.5">
                     
                     {/* Circle icon marker on the timeline line */}
-                    <span className="absolute -left-[33px] top-0.5 w-6.5 h-6.5 rounded-full border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 flex items-center justify-center">
+                    <span className="absolute -left-[30px] top-0.5 w-6 h-6 rounded-lg border border-[#14213d]/5 dark:border-white/5 bg-white dark:bg-[#111827] flex items-center justify-center shadow-sm">
                       {getActivityIcon(act.event_type)}
                     </span>
                     
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs font-semibold text-ink-900 dark:text-paper-50">
+                      <p className="text-xs font-bold text-[#14213d] dark:text-[#f9fafb]">
                         {getActivityLabel(act)}
                       </p>
-                      <span className="text-[9px] font-mono text-ink-500 dark:text-ink-300 whitespace-nowrap">
+                      <span className="text-[9px] font-mono text-slate-400 font-bold whitespace-nowrap">
                         {new Date(act.created_at).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}
                       </span>
                     </div>
 
                     {/* Show comments or values logged */}
                     {act.new_value && act.event_type !== "created" && act.event_type !== "status_changed" && (
-                      <p className="text-xs text-ink-600 dark:text-ink-300 p-2.5 rounded bg-paper-100 dark:bg-ink-950 border border-ink-100/60 dark:border-ink-800/60 font-body leading-relaxed whitespace-pre-wrap">
+                      <p className="text-xs text-[#14213d]/70 dark:text-[#beb7a7]/80 p-3 rounded-xl bg-[#f8f7f4] dark:bg-ink-950/20 border border-[#14213d]/5 dark:border-white/5 font-body leading-relaxed whitespace-pre-wrap">
                         {act.new_value}
                       </p>
                     )}
@@ -663,7 +668,7 @@ function DetailField({
 
   return (
     <div className="space-y-1.5">
-      <label className="text-[11px] font-semibold text-ink-500 dark:text-ink-300 uppercase tracking-wide block">
+      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
         {label}
       </label>
       {isEditing ? (
@@ -674,7 +679,7 @@ function DetailField({
             placeholder={placeholder}
             required={required}
             rows={4}
-            className="w-full px-3 py-2 rounded-lg border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 text-sm outline-none focus:border-gold-500 text-ink-900 dark:text-paper-100"
+            className="w-full p-3.5 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] font-sans resize-none"
           />
         ) : (
           <input
@@ -683,15 +688,15 @@ function DetailField({
             onChange={(e) => onChange(name, e.target.value)}
             placeholder={placeholder}
             required={required}
-            className="w-full px-3 py-2 rounded-lg border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 text-sm outline-none focus:border-gold-500 text-ink-900 dark:text-paper-100"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] font-sans"
           />
         )
       ) : (
-        <div className="text-sm font-medium text-ink-900 dark:text-paper-100 py-1">
+        <div className="text-xs sm:text-sm font-bold text-[#14213d] dark:text-[#f9fafb] py-1">
           {renderView ? (
             renderView(displayValue)
           ) : isTextArea ? (
-            <p className="whitespace-pre-wrap text-sm text-ink-700 dark:text-ink-200 leading-relaxed font-body bg-paper-100/50 dark:bg-ink-950/50 p-3 rounded-lg border border-ink-100/40 dark:border-ink-800/40">
+            <p className="whitespace-pre-wrap text-xs text-[#14213d]/70 dark:text-[#beb7a7]/80 leading-relaxed font-body bg-[#f8f7f4] dark:bg-ink-950/20 p-3.5 rounded-xl border border-[#14213d]/5 dark:border-white/5">
               {displayValue || "—"}
             </p>
           ) : (

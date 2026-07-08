@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Droplet,
   ArrowRight,
@@ -16,14 +17,14 @@ import {
   Store,
   ChevronDown,
   ChevronUp,
+  MessageSquare,
+  BarChart3,
+  ShieldAlert
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 
 export default function Landing({ theme, onToggleTheme }) {
   const { session } = useAuth();
-  const navigate = useNavigate();
-  
-  // Redirect if logged in is removed so users can view the landing page directly.
   
   // Interactive mock lead status changer state
   const [mockLeadStatus, setMockLeadStatus] = useState("Interested");
@@ -34,17 +35,27 @@ export default function Landing({ theme, onToggleTheme }) {
   // Accordion FAQ active indexes
   const [openFaqs, setOpenFaqs] = useState({});
 
+  // Mouse Parallax coordinates
+  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
     // SEO setup
-    document.title = "BrewFlow AI — Sales OS for Physical B2B Suppliers";
+    document.title = "BrewFlow AI — B2B Sales. Finally Organized.";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
         "content",
-        "BrewFlow AI is a B2B Sales Operating System for coffee roasters, bakeries, and physical product distributors to track leads, follow-ups, and log activity."
+        "BrewFlow AI is a premium B2B Sales Operating System for coffee suppliers, oat milk roasters, and bakeries. Track leads, pipelines, follow-ups, and AI assistance."
       );
     }
   }, []);
+
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const x = (clientX - window.innerWidth / 2) / 45;
+    const y = (clientY - window.innerHeight / 2) / 45;
+    setMouseCoords({ x, y });
+  };
 
   const toggleFaq = (index) => {
     setOpenFaqs((prev) => ({
@@ -55,9 +66,9 @@ export default function Landing({ theme, onToggleTheme }) {
 
   // Metrics that respond to the mock lead status
   const getMockMetrics = () => {
-    let baseLeads = 42;
-    let baseSamples = 12;
-    let baseCustomers = 18;
+    let baseLeads = 84;
+    let baseSamples = 24;
+    let baseCustomers = 36;
     
     if (mockLeadStatus === "Sample Sent") {
       baseSamples += 1;
@@ -95,54 +106,57 @@ export default function Landing({ theme, onToggleTheme }) {
   ];
 
   return (
-    <div className="min-h-screen bg-paper-100 dark:bg-ink-950 text-ink-900 dark:text-paper-100 font-body selection:bg-gold-400 selection:text-ink-950">
+    <div 
+      onMouseMove={handleMouseMove}
+      className="min-h-screen bg-[#f7f5ef] dark:bg-[#0b1120] text-[#14213d] dark:text-[#f9fafb] font-body selection:bg-[#d8a64c] selection:text-white transition-colors duration-300"
+    >
       
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-paper-100/80 dark:bg-ink-950/80 border-b border-ink-100 dark:border-ink-800 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gold-500 flex items-center justify-center">
-              <Droplet size={18} className="text-ink-950" strokeWidth={2.5} />
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-[#f7f5ef]/80 dark:bg-[#0b1120]/80 border-b border-[#14213d]/5 dark:border-white/5 transition-all">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8.5 h-8.5 rounded-xl bg-[#d8a64c] flex items-center justify-center shadow-sm">
+              <Droplet size={18} className="text-[#14213d]" strokeWidth={2.5} />
             </div>
-            <span className="font-display font-bold text-lg tracking-tight text-ink-900 dark:text-paper-100">
-              BrewFlow <span className="text-gold-500 font-mono text-xs">AI</span>
+            <span className="font-display font-bold text-lg tracking-tight text-[#14213d] dark:text-[#f9fafb]">
+              BrewFlow <span className="text-[#d8a64c] font-mono text-xs font-bold">OS</span>
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-500 dark:text-ink-300">
-            <a href="#features" className="hover:text-ink-900 dark:hover:text-paper-100 transition-colors">Features</a>
-            <a href="#demo" className="hover:text-ink-900 dark:hover:text-paper-100 transition-colors">Product Tour</a>
-            <a href="#pricing" className="hover:text-ink-900 dark:hover:text-paper-100 transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-ink-900 dark:hover:text-paper-100 transition-colors">FAQ</a>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-[#14213d]/60 dark:text-[#beb7a7]/65">
+            <a href="#features" className="hover:text-[#14213d] dark:hover:text-white transition-colors">Features</a>
+            <a href="#demo" className="hover:text-[#14213d] dark:hover:text-white transition-colors">Product Tour</a>
+            <a href="#pricing" className="hover:text-[#14213d] dark:hover:text-white transition-colors">Pricing</a>
+            <a href="#faq" className="hover:text-[#14213d] dark:hover:text-white transition-colors">FAQ</a>
           </nav>
 
           <div className="flex items-center gap-4">
             <button
               onClick={onToggleTheme}
-              className="p-2 rounded-lg border border-ink-100 dark:border-ink-800 text-ink-500 dark:text-ink-300 hover:bg-ink-100/60 dark:hover:bg-ink-800/60 transition-all"
+              className="p-2.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 text-[#14213d] dark:text-[#beb7a7] hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-all cursor-pointer"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
             {session ? (
               <Link
                 to="/dashboard"
-                className="px-4 py-2 rounded-lg bg-gold-500 text-ink-950 text-sm font-medium hover:bg-gold-400 transition-colors shadow-sm"
+                className="px-4.5 py-2.5 rounded-xl bg-[#d8a64c] hover:bg-[#c19036] text-white text-xs font-bold shadow-sm transition-all hover:scale-[1.03] uppercase tracking-wider"
               >
-                Go to Dashboard
+                Go to Workspace
               </Link>
             ) : (
               <>
                 <Link
                   to="/login"
-                  className="hidden sm:inline-block text-sm font-medium text-ink-500 dark:text-ink-300 hover:text-ink-900 dark:hover:text-paper-100 transition-colors"
+                  className="hidden sm:inline-block text-xs font-bold uppercase tracking-wider text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:text-[#14213d] dark:hover:text-white transition-colors"
                 >
                   Log in
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-4 py-2 rounded-lg bg-gold-500 text-ink-950 text-sm font-medium hover:bg-gold-400 transition-colors shadow-sm"
+                  className="px-4.5 py-2.5 rounded-xl bg-[#14213d] dark:bg-[#d8a64c] text-white dark:text-[#14213d] text-xs font-bold shadow-sm transition-all hover:scale-[1.03] uppercase tracking-wider"
                 >
                   Start Free
                 </Link>
@@ -153,334 +167,382 @@ export default function Landing({ theme, onToggleTheme }) {
       </header>
 
       {/* 2. Hero Section */}
-      <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             
             {/* Left Hero Text */}
-            <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/20">
-                <Sparkles size={12} />
+            <div className="lg:col-span-5 space-y-6 text-center lg:text-left">
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold font-mono bg-[#d8a64c]/10 text-[#d8a64c] border border-[#d8a64c]/20 uppercase tracking-widest"
+              >
+                <Sparkles size={11} />
                 Now in Private Beta
-              </div>
-              <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight text-ink-900 dark:text-paper-50 leading-[1.1]">
-                The CRM Built for <br />
-                <span className="text-gold-500">Physical B2B Sales</span>
-              </h1>
-              <p className="text-base sm:text-lg text-ink-500 dark:text-ink-300 max-w-xl mx-auto lg:mx-0">
-                Stop running wholesale sales on memory and scattered spreadsheets. BrewFlow AI helps specialty roasters, bakeries, and food brands track leads, dispatch samples, log activity, and scale.
-              </p>
+              </motion.div>
               
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight text-[#14213d] dark:text-[#f9fafb] leading-[1.05]"
+              >
+                B2B Sales. <br />
+                <span className="text-[#d8a64c]">Finally Organized.</span>
+              </motion.h1>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-sm sm:text-base text-[#14213d]/60 dark:text-[#beb7a7]/75 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light"
+              >
+                Stop running wholesale pipelines on memory and sheets. BrewFlow is the premium Sales OS built for coffee suppliers, oat milk brands, bakeries, and distributors to log, automate, and close deals.
+              </motion.p>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+              >
                 {session ? (
                   <Link
                     to="/dashboard"
-                    className="w-full sm:w-auto px-6 py-3 rounded-lg bg-gold-500 text-ink-950 font-medium hover:bg-gold-400 transition-colors flex items-center justify-center gap-2 group shadow-md"
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#d8a64c] text-white hover:bg-[#c19036] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md hover:scale-[1.02]"
                   >
-                    Go to workspace <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    Go to Workspace <ArrowRight size={14} />
                   </Link>
                 ) : (
                   <>
                     <Link
                       to="/signup"
-                      className="w-full sm:w-auto px-6 py-3 rounded-lg bg-gold-500 text-ink-950 font-medium hover:bg-gold-400 transition-colors flex items-center justify-center gap-2 group shadow-md"
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#14213d] dark:bg-[#d8a64c] text-white dark:text-[#14213d] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md hover:scale-[1.02]"
                     >
-                      Create Free Account <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      Create Free Account <ArrowRight size={14} />
                     </Link>
                     <Link
                       to="/login"
-                      className="w-full sm:w-auto px-6 py-3 rounded-lg border border-ink-100 dark:border-ink-800 hover:bg-ink-100/60 dark:hover:bg-ink-800/60 font-medium text-sm transition-colors text-center"
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl border border-[#14213d]/15 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-[#14213d]/70 dark:text-[#beb7a7] hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-all text-center"
                     >
                       Book a Demo
                     </Link>
                   </>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Badges/Trust */}
-              <div className="pt-6 border-t border-ink-100 dark:border-ink-800 max-w-md mx-auto lg:mx-0">
-                <p className="text-xs font-mono uppercase tracking-wider text-ink-500 dark:text-ink-300 mb-3">
-                  Loved by modern suppliers
+              {/* Brands Trust */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="pt-8 border-t border-[#14213d]/5 dark:border-white/5 max-w-md mx-auto lg:mx-0"
+              >
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#14213d]/50 dark:text-[#beb7a7]/50 mb-3">
+                  Powering Modern Wholesale Brands
                 </p>
-                <div className="flex justify-center lg:justify-start gap-8 items-center opacity-60 grayscale dark:invert">
-                  <div className="flex items-center gap-1 font-display font-semibold tracking-tight text-sm">
-                    <Coffee size={16} /> OATISH
+                <div className="flex justify-center lg:justify-start gap-8 items-center opacity-70 grayscale dark:invert">
+                  <div className="flex items-center gap-1 font-display font-bold tracking-tight text-xs text-[#14213d]">
+                    <Coffee size={14} className="text-[#d8a64c]" /> OATISH
                   </div>
-                  <div className="flex items-center gap-1 font-display font-semibold tracking-tight text-sm">
-                    <Package size={16} /> BEANERY CO.
+                  <div className="flex items-center gap-1 font-display font-bold tracking-tight text-xs text-[#14213d]">
+                    <Package size={14} className="text-[#d8a64c]" /> BEANERY CO.
                   </div>
-                  <div className="flex items-center gap-1 font-display font-semibold tracking-tight text-sm">
-                    <Store size={16} /> FLOUR & CO.
+                  <div className="flex items-center gap-1 font-display font-bold tracking-tight text-xs text-[#14213d]">
+                    <Store size={14} className="text-[#d8a64c]" /> FLOUR & CO.
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-
-            {/* Right Hero Interactive Mockup */}
-            <div className="lg:col-span-6">
-              <div className="relative p-2 rounded-2xl bg-paper-200/50 dark:bg-ink-900/50 border border-ink-100 dark:border-ink-800 shadow-2xl">
+            
+            {/* Right Hero: Floating CRM Deck Graphics */}
+            <div className="lg:col-span-7 relative flex items-center justify-center min-h-[450px]">
+              
+              {/* Parallax Container wrapping animated cards */}
+              <motion.div 
+                style={{ 
+                  x: mouseCoords.x, 
+                  y: mouseCoords.y,
+                  rotateX: -mouseCoords.y * 0.4,
+                  rotateY: mouseCoords.x * 0.4,
+                  transformStyle: "preserve-3d" 
+                }}
+                className="relative w-full max-w-lg transition-transform duration-300 ease-out"
+              >
                 
-                {/* Simulated App Header */}
-                <div className="flex items-center justify-between px-4 py-2 border-b border-ink-100 dark:border-ink-800">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-coral-500"></span>
-                    <span className="w-2.5 h-2.5 rounded-full bg-gold-500"></span>
-                    <span className="w-2.5 h-2.5 rounded-full bg-moss-500"></span>
-                  </div>
-                  <span className="text-[10px] font-mono tracking-widest text-ink-500 dark:text-ink-300">
-                    BREWFLOW_AI_DASHBOARD
-                  </span>
-                  <span className="w-4 h-4 rounded bg-ink-100 dark:bg-ink-800"></span>
-                </div>
-
-                {/* Dashboard Stats */}
-                <div className="p-4 grid grid-cols-3 gap-3">
-                  <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink-100 dark:border-ink-800">
-                    <p className="text-[10px] font-medium text-ink-500 dark:text-ink-300 uppercase">Leads</p>
-                    <p className="text-xl font-display font-bold text-ink-900 dark:text-paper-100 font-mono mt-0.5">
-                      {metrics.totalLeads}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink-100 dark:border-ink-800">
-                    <p className="text-[10px] font-medium text-ink-500 dark:text-ink-300 uppercase">Samples</p>
-                    <p className="text-xl font-display font-bold text-ink-900 dark:text-paper-100 font-mono mt-0.5">
-                      {metrics.samplesSent}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink-100 dark:border-ink-800">
-                    <p className="text-[10px] font-medium text-ink-500 dark:text-ink-300 uppercase">Customers</p>
-                    <p className="text-xl font-display font-bold text-ink-900 dark:text-paper-100 font-mono mt-0.5 text-moss-500">
-                      {metrics.customers}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Interactive Demo Box */}
-                <div className="mx-4 mb-4 p-4 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink-100 dark:border-ink-800">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="text-xs font-semibold text-ink-900 dark:text-paper-100">
-                        Interactive Sandbox
-                      </h3>
-                      <p className="text-[10px] text-ink-500 dark:text-ink-300">
-                        Click the buttons to change status and see dashboard update
-                      </p>
+                {/* 1. Base Canvas Card (Dashboard Overview) */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                  className="rounded-2xl bg-white/70 dark:bg-[#111827]/70 border border-[#14213d]/5 dark:border-white/5 p-5 shadow-2xl backdrop-blur-md"
+                >
+                  <div className="flex items-center justify-between pb-3.5 border-b border-[#14213d]/5 dark:border-white/5 mb-4">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#e06656]"></span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#d8a64c]"></span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#5b7553]"></span>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/25">
-                      Live Preview
+                    <span className="text-[9px] font-mono tracking-widest text-[#14213d]/40 dark:text-[#beb7a7]/40 uppercase font-bold">
+                      BREWFLOW_PIPELINE
                     </span>
                   </div>
 
-                  {/* Demo Lead Card */}
-                  <div className="p-3.5 rounded-lg border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-900 space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="text-sm font-semibold text-ink-900 dark:text-paper-100">
-                          Central Roast Coffee Co.
-                        </h4>
-                        <p className="text-xs text-ink-500 dark:text-ink-300">
-                          Specialty Coffee Shop · Chicago, IL
-                        </p>
-                      </div>
-                      
-                      {/* Interactive pill */}
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wide uppercase ${
-                        mockLeadStatus === "Interested"
-                          ? "bg-gold-500/15 text-gold-600 dark:text-gold-400"
-                          : mockLeadStatus === "Sample Sent"
-                          ? "bg-ink-100 dark:bg-ink-800 text-ink-950 dark:text-paper-100"
-                          : "bg-moss-100 text-moss-500"
-                      }`}>
-                        {mockLeadStatus}
-                      </span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-[#0b1120]/40 border border-[#14213d]/5">
+                      <p className="text-[9px] font-bold text-[#14213d]/50 dark:text-[#beb7a7]/50 uppercase">Active Leads</p>
+                      <p className="text-lg font-mono font-bold text-[#14213d] dark:text-[#f9fafb] mt-0.5">
+                        {metrics.totalLeads}
+                      </p>
                     </div>
+                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-[#0b1120]/40 border border-[#14213d]/5">
+                      <p className="text-[9px] font-bold text-[#14213d]/50 dark:text-[#beb7a7]/50 uppercase">Samples Sent</p>
+                      <p className="text-lg font-mono font-bold text-[#14213d] dark:text-[#f9fafb] mt-0.5">
+                        {metrics.samplesSent}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-[#0b1120]/40 border border-[#14213d]/5">
+                      <p className="text-[9px] font-bold text-[#14213d]/50 dark:text-[#beb7a7]/50 uppercase">Customers</p>
+                      <p className="text-lg font-mono font-bold text-[#5b7553] mt-0.5">
+                        {metrics.customers}
+                      </p>
+                    </div>
+                  </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-[10px] text-ink-500 dark:text-ink-300 font-mono">
-                      <div>Consumption: <span className="text-ink-900 dark:text-paper-100 font-medium">80kg / mo</span></div>
-                      <div>Monthly Revenue: <span className="text-ink-900 dark:text-paper-100 font-medium">$2,400</span></div>
-                    </div>
+                  {/* Spacer for overlapping floating cards */}
+                  <div className="h-44"></div>
+                </motion.div>
 
-                    {/* Interactive Button Bar */}
-                    <div className="pt-2 border-t border-ink-100 dark:border-ink-800 flex gap-1.5">
-                      <button
-                        onClick={() => setMockLeadStatus("Interested")}
-                        className={`flex-1 py-1 rounded text-[10px] font-medium transition-colors ${
-                          mockLeadStatus === "Interested"
-                            ? "bg-gold-500 text-ink-950"
-                            : "bg-paper-50 dark:bg-ink-950 hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-500 dark:text-ink-300"
-                        }`}
-                      >
-                        Interested
-                      </button>
-                      <button
-                        onClick={() => setMockLeadStatus("Sample Sent")}
-                        className={`flex-1 py-1 rounded text-[10px] font-medium transition-colors ${
-                          mockLeadStatus === "Sample Sent"
-                            ? "bg-gold-500 text-ink-950"
-                            : "bg-paper-50 dark:bg-ink-950 hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-500 dark:text-ink-300"
-                        }`}
-                      >
-                        Send Sample
-                      </button>
-                      <button
-                        onClick={() => setMockLeadStatus("Customer")}
-                        className={`flex-1 py-1 rounded text-[10px] font-medium transition-colors ${
-                          mockLeadStatus === "Customer"
-                            ? "bg-moss-500 text-paper-50"
-                            : "bg-paper-50 dark:bg-ink-950 hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-500 dark:text-ink-300"
-                        }`}
-                      >
-                        Close Won
-                      </button>
+                {/* 2. Floating Card A: Attio-style Lead Profile (Overlapping) */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 50, x: -10 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 110, 
+                    x: 20,
+                    rotate: -1
+                  }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="absolute top-20 left-4 w-72 rounded-2xl bg-white/90 dark:bg-[#1f2937]/90 p-4 border border-[#14213d]/5 dark:border-white/10 shadow-xl backdrop-blur-lg"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-[#14213d] dark:text-[#f9fafb]">
+                        Central Roast Coffee Co.
+                      </h4>
+                      <p className="text-[10px] text-[#14213d]/50 dark:text-[#beb7a7]/60 mt-0.5">
+                        Coffee Shop · Chicago, IL
+                      </p>
                     </div>
+                    <span className="px-2 py-0.5 rounded text-[8px] font-bold uppercase bg-[#d8a64c]/10 text-[#d8a64c] border border-[#d8a64c]/20">
+                      Interested
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mt-3 text-[9px] font-mono text-[#14213d]/60 dark:text-[#beb7a7]/60">
+                    <div>Volume: <span className="text-[#14213d] dark:text-[#f9fafb] font-bold">120kg/mo</span></div>
+                    <div>Est. Deal: <span className="text-[#14213d] dark:text-[#f9fafb] font-bold">$3,600</span></div>
+                  </div>
+                </motion.div>
+
+                {/* 3. Floating Card B: AI Sales Assistant Draft Copy (Overlapping) */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 60, x: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 130, 
+                    x: 180,
+                    rotate: 1.5
+                  }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="absolute top-24 left-10 w-72 rounded-2xl bg-[#14213d]/95 p-4 border border-white/10 shadow-xl text-white backdrop-blur-lg"
+                >
+                  <div className="flex items-center gap-1.5 pb-2 border-b border-white/5 mb-2">
+                    <Sparkles size={11} className="text-[#d8a64c]" />
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-[#d8a64c] font-bold">AI outreach builder</span>
+                  </div>
+                  <p className="text-[9px] text-[#beb7a7] leading-relaxed italic">
+                    "Hi Central Roast team, noticed you run a specialty coffee bar in Chicago. We supply certified organic oat milk..."
+                  </p>
+                  <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/5">
+                    <span className="text-[8px] font-mono text-white/40">Powered by Gemini</span>
+                    <span className="px-2 py-0.5 rounded text-[8px] font-bold bg-[#d8a64c] text-white">Drafted</span>
+                  </div>
+                </motion.div>
+
+                {/* 4. Interactive Status Changer Switcher */}
+                <div className="absolute -bottom-2 right-4 bg-white dark:bg-[#111827] border border-[#14213d]/10 dark:border-white/10 rounded-xl p-2.5 shadow-md flex gap-2 items-center text-[10px]">
+                  <span className="font-semibold text-[#14213d]/60 dark:text-[#beb7a7]/60">Change Status:</span>
+                  <div className="flex gap-1">
+                    {["Interested", "Sample Sent", "Customer"].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setMockLeadStatus(status)}
+                        className={`px-2 py-0.5 rounded text-[8px] font-bold transition-all border-none cursor-pointer ${
+                          mockLeadStatus === status
+                            ? "bg-[#d8a64c] text-white"
+                            : "bg-[#f7f5ef] dark:bg-[#0b1120] text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:bg-[#14213d]/5"
+                        }`}
+                      >
+                        {status === "Sample Sent" ? "Sample" : status === "Customer" ? "Won" : status}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Simulated Audit Feed */}
-                <div className="px-4 pb-4">
-                  <div className="p-3 rounded-xl bg-paper-50 dark:bg-ink-950 border border-ink-100 dark:border-ink-800">
-                    <p className="text-[10px] font-semibold text-ink-500 dark:text-ink-300 mb-2 flex items-center gap-1 uppercase tracking-wider">
-                      <Activity size={10} /> Lead Activity Feed
-                    </p>
-                    <div className="space-y-2 text-[10px] font-mono">
-                      <div className="flex items-center justify-between text-ink-500 dark:text-ink-300">
-                        <span>Lead status updated to <span className="text-gold-500">{mockLeadStatus}</span></span>
-                        <span>Just now</span>
-                      </div>
-                      <div className="flex items-center justify-between text-ink-500 dark:text-ink-300 opacity-60">
-                        <span>New lead Central Roast Coffee Co. created</span>
-                        <span>2 hours ago</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
+              </motion.div>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* 3. Features Section */}
-      <section id="features" className="py-20 bg-paper-50 dark:bg-ink-900 transition-colors border-y border-ink-100 dark:border-ink-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink-900 dark:text-paper-50">
-              Built for the Operations of Physical Sales
+      {/* 3. Features Section (Scroll Reveal) */}
+      <section id="features" className="py-24 bg-white dark:bg-[#111827] transition-all border-y border-[#14213d]/5 dark:border-white/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          
+          <div className="text-center space-y-4 mb-20">
+            <h2 className="font-display font-extrabold text-3xl md:text-4xl text-[#14213d] dark:text-[#f9fafb] tracking-tight">
+              A CRM Built for Physical Operations
             </h2>
-            <p className="text-sm md:text-base text-ink-500 dark:text-ink-300 max-w-xl mx-auto">
-              Traditional CRMs are designed for software. BrewFlow is tailored for the specific workflows of physical products, samples, and recurring orders.
+            <p className="text-xs sm:text-sm text-[#14213d]/50 dark:text-[#beb7a7]/60 max-w-xl mx-auto font-light leading-relaxed">
+              Traditional software CRMs track virtual SaaS deals. BrewFlow is optimized specifically for physical wholesale variables: samples, volumes, and regular suppliers.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* Feature 1 */}
-            <div className="p-6 rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 space-y-4 hover:border-gold-500/50 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-gold-500/10 text-gold-600 dark:text-gold-400 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-ink-950 transition-colors">
-                <Users size={20} />
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
+                <Users size={18} />
               </div>
-              <h3 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">
-                True B2B Scope
+              <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb]">
+                Structured B2B Profiles
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-300">
-                Track custom product interest, estimated monthly consumption, and current supplier info. Keep lead status synchronized from New to Sample Sent to customer.
+              <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65 leading-relaxed font-light">
+                Track interested products, target monthly consumption weight, and current competitor suppliers. Keep lead cards cleanly updated.
               </p>
-            </div>
+            </motion.div>
 
             {/* Feature 2 */}
-            <div className="p-6 rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 space-y-4 hover:border-gold-500/50 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-gold-500/10 text-gold-600 dark:text-gold-400 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-ink-950 transition-colors">
-                <CalendarClock size={20} />
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
+                <CalendarClock size={18} />
               </div>
-              <h3 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">
-                Intelligent Follow-ups
+              <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb]">
+                Linear-style Scheduler
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-300">
-                Group follow-ups into Overdue, Today, and Upcoming lists. Never forget a client check-in or a scheduled sample dispatch again.
+              <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65 leading-relaxed font-light">
+                Group follow-ups into Overdue, Today, and Upcoming lists. Never forget a client review or a sample package dispatch again.
               </p>
-            </div>
+            </motion.div>
 
             {/* Feature 3 */}
-            <div className="p-6 rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 space-y-4 hover:border-gold-500/50 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-gold-500/10 text-gold-600 dark:text-gold-400 flex items-center justify-center group-hover:bg-gold-500 group-hover:text-ink-950 transition-colors">
-                <Sparkles size={20} />
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
+                <Sparkles size={18} />
               </div>
-              <h3 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">
-                AI GTM Assistant
+              <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb]">
+                Secure AI Assistant
               </h3>
-              <p className="text-sm text-ink-500 dark:text-ink-300">
-                Draft customized cold emails, call scripts, or WhatsApp follow-up messages based on the client's current supplier and product interest profile in seconds.
+              <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65 leading-relaxed font-light">
+                Draft customized cold emails, WhatsApp follow-ups, or scripts based on lead details. All API key credentials remain locked server-side.
               </p>
-            </div>
+            </motion.div>
 
           </div>
         </div>
       </section>
 
-      {/* 4. Product Tour/Interactive Section */}
-      <section id="demo" className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      {/* 4. Product Tour/Tenancy Security Panel */}
+      <section id="demo" className="py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             
             {/* Left Graphics */}
             <div className="lg:col-span-6 order-2 lg:order-1 space-y-4">
-              <div className="p-5 rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 space-y-3 shadow-md">
-                <div className="flex items-center justify-between pb-3 border-b border-ink-100 dark:border-ink-800">
+              <div className="p-5.5 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#111827]/40 space-y-3.5 shadow-md">
+                <div className="flex items-center justify-between pb-3 border-b border-[#14213d]/5 dark:border-white/5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-moss-500" />
-                    <span className="font-display font-semibold text-sm">Security & RLS Enforced</span>
+                    <CheckCircle2 size={16} className="text-[#5b7553]" />
+                    <span className="font-display font-bold text-xs uppercase tracking-wider">RLS Multi-Tenancy Scoped</span>
                   </div>
-                  <span className="text-[10px] font-mono bg-moss-100 text-moss-500 px-2 py-0.5 rounded">
-                    Passed
+                  <span className="text-[8px] font-mono bg-[#5b7553]/15 text-[#5b7553] px-2 py-0.5 rounded font-bold">
+                    Secure
                   </span>
                 </div>
-                <p className="text-xs text-ink-500 dark:text-ink-300">
-                  We use Supabase Postgres RLS policies directly. Your data is isolated at the database layer. No API breach can leak your leads or contacts to another organization.
+                <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65 leading-relaxed font-light">
+                  We use Row Level Security (RLS) policies directly on Supabase. Your business leads, activities, and generated copy are fully isolated from other organizations.
                 </p>
-                <div className="p-3 bg-paper-100 dark:bg-ink-950 rounded-lg border border-ink-100 dark:border-ink-800 font-mono text-[9px] text-ink-500 dark:text-ink-300">
-                  <span>CREATE POLICY org_security ON leads FOR ALL TO authenticated USING (organization_id = auth.uid());</span>
+                <div className="p-3 bg-white/80 dark:bg-black/30 rounded-xl border border-[#14213d]/5 dark:border-white/5 font-mono text-[9px] text-[#14213d]/50 dark:text-[#beb7a7]/60 overflow-x-auto">
+                  <span>CREATE POLICY org_isolation ON leads USING (organization_id = auth.uid());</span>
                 </div>
               </div>
 
-              <div className="p-5 rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 space-y-3 shadow-md">
-                <div className="flex items-center gap-2 pb-3 border-b border-ink-100 dark:border-ink-800">
-                  <Activity size={16} className="text-gold-500" />
-                  <span className="font-display font-semibold text-sm">Real-time Lead Activity Timeline</span>
+              <div className="p-5.5 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#111827]/40 space-y-3.5 shadow-md">
+                <div className="flex items-center gap-2 pb-3 border-b border-[#14213d]/5 dark:border-white/5">
+                  <Activity size={16} className="text-[#d8a64c]" />
+                  <span className="font-display font-bold text-xs uppercase tracking-wider">Lead Activity Timeline</span>
                 </div>
-                <p className="text-xs text-ink-500 dark:text-ink-300">
-                  Whenever you update a lead's status, send a sample, or change key customer metrics, BrewFlow inserts an audit trail event log so your team has a shared timeline.
+                <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65 leading-relaxed font-light">
+                  Whenever you update deal stages, send samples, or append logs, BrewFlow writes an audit trail inside the database activity ledger so your sales team has a unified context.
                 </p>
               </div>
             </div>
 
             {/* Right Information */}
             <div className="lg:col-span-6 order-1 lg:order-2 space-y-6 text-center lg:text-left">
-              <h2 className="font-display font-bold text-3xl md:text-4xl text-ink-900 dark:text-paper-50 leading-tight">
-                Designed to Move Physical Wholesale Pipelines
+              <h2 className="font-display font-extrabold text-3xl md:text-4xl text-[#14213d] dark:text-[#f9fafb] tracking-tight leading-tight">
+                Designed to Move B2B Wholesale Pipelines
               </h2>
-              <p className="text-sm md:text-base text-ink-500 dark:text-ink-300">
-                BrewFlow AI simplifies physical inventory sample tracking and follow-up, giving your sales reps a clean overview.
+              <p className="text-xs sm:text-sm text-[#14213d]/50 dark:text-[#beb7a7]/60 font-light leading-relaxed">
+                BrewFlow simplifies lead procurement tracking and interaction histories, allowing sales reps to focus on client outreach rather than updating columns in messy tables.
               </p>
-              <div className="space-y-3 max-w-lg mx-auto lg:mx-0 text-left">
-                <div className="flex items-start gap-2.5 text-sm">
-                  <div className="w-5 h-5 rounded bg-gold-500/10 text-gold-500 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check size={14} />
+              <div className="space-y-4 max-w-lg mx-auto lg:mx-0 text-left pt-2">
+                <div className="flex items-start gap-2.5 text-xs">
+                  <div className="w-5.5 h-5.5 rounded bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center shrink-0 mt-0.5">
+                    <Check size={13} />
                   </div>
-                  <p className="text-ink-500 dark:text-ink-300"><strong className="text-ink-900 dark:text-paper-100">Soft-Delete Safeguard:</strong> Leads are marked `is_deleted = true` instead of hard purging, preventing accidental sales history loss.</p>
+                  <p className="text-[#14213d]/60 dark:text-[#beb7a7]/70 font-light leading-snug">
+                    <strong className="text-[#14213d] dark:text-white font-bold">Soft-Delete Safeguard:</strong> Deleted leads are marked `is_deleted = true` instead of being permanently removed, protecting valuable customer records.
+                  </p>
                 </div>
-                <div className="flex items-start gap-2.5 text-sm">
-                  <div className="w-5 h-5 rounded bg-gold-500/10 text-gold-500 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check size={14} />
+                <div className="flex items-start gap-2.5 text-xs">
+                  <div className="w-5.5 h-5.5 rounded bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center shrink-0 mt-0.5">
+                    <Check size={13} />
                   </div>
-                  <p className="text-ink-500 dark:text-ink-300"><strong className="text-ink-900 dark:text-paper-100">Live Estimates:</strong> Auto-calculate monthly consumption weights and potential customer value on the fly.</p>
+                  <p className="text-[#14213d]/60 dark:text-[#beb7a7]/70 font-light leading-snug">
+                    <strong className="text-[#14213d] dark:text-white font-bold">Live Estimates:</strong> Automated calculations sum prospective monthly weights and target revenue values on the fly.
+                  </p>
                 </div>
-                <div className="flex items-start gap-2.5 text-sm">
-                  <div className="w-5 h-5 rounded bg-gold-500/10 text-gold-500 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check size={14} />
+                <div className="flex items-start gap-2.5 text-xs">
+                  <div className="w-5.5 h-5.5 rounded bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center shrink-0 mt-0.5">
+                    <Check size={13} />
                   </div>
-                  <p className="text-ink-500 dark:text-ink-300"><strong className="text-ink-900 dark:text-paper-100">Unified UI:</strong> Dark and light theme modes render dynamically to keep eye strain low during long cold calling sessions.</p>
+                  <p className="text-[#14213d]/60 dark:text-[#beb7a7]/70 font-light leading-snug">
+                    <strong className="text-[#14213d] dark:text-white font-bold">Fluid UI Elements:</strong> Clean ivory styling and responsive layouts keep user strain low during long B2B outbound sessions.
+                  </p>
                 </div>
               </div>
             </div>
@@ -489,32 +551,32 @@ export default function Landing({ theme, onToggleTheme }) {
         </div>
       </section>
 
-      {/* 5. Pricing Section */}
-      <section id="pricing" className="py-20 bg-paper-50 dark:bg-ink-900 transition-colors border-y border-ink-100 dark:border-ink-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 5. Pricing Section (Clean Grid) */}
+      <section id="pricing" className="py-24 bg-white dark:bg-[#111827] transition-all border-y border-[#14213d]/5 dark:border-white/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           
-          <div className="text-center space-y-4 mb-10">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink-900 dark:text-paper-50">
-              Pricing Built for Growth
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="font-display font-extrabold text-3xl md:text-4xl text-[#14213d] dark:text-[#f9fafb] tracking-tight">
+              Pricing Built for Supply Chains
             </h2>
-            <p className="text-sm md:text-base text-ink-500 dark:text-ink-300 max-w-xl mx-auto">
-              Start tracking leads for free. Upgrade to roast-scale operations as your sales team expands.
+            <p className="text-xs sm:text-sm text-[#14213d]/50 dark:text-[#beb7a7]/60 max-w-xl mx-auto font-light leading-relaxed">
+              Start logging leads for free. Upgrade to team scaling operations as your wholesale accounts expand.
             </p>
 
             {/* Toggle Monthly / Annual */}
-            <div className="flex items-center justify-center gap-3 pt-4">
-              <span className={`text-xs font-mono transition-colors ${!isAnnual ? "text-ink-900 dark:text-paper-100 font-semibold" : "text-ink-500"}`}>
+            <div className="flex items-center justify-center gap-3 pt-6">
+              <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${!isAnnual ? "text-[#14213d] dark:text-[#f9fafb]" : "text-[#14213d]/40 dark:text-[#beb7a7]/40"}`}>
                 Monthly
               </span>
               <button
                 onClick={() => setIsAnnual(!isAnnual)}
-                className="w-12 h-6.5 rounded-full bg-ink-100 dark:bg-ink-800 p-1 flex items-center transition-colors relative"
+                className="w-12 h-6.5 rounded-full bg-[#14213d]/10 dark:bg-white/10 p-1 flex items-center transition-colors relative cursor-pointer border-none"
                 aria-label="Toggle pricing period"
               >
-                <div className={`w-4.5 h-4.5 rounded-full bg-gold-500 transition-transform ${isAnnual ? "translate-x-5.5" : "translate-x-0"}`}></div>
+                <div className={`w-4.5 h-4.5 rounded-full bg-[#d8a64c] transition-transform ${isAnnual ? "translate-x-5.5" : "translate-x-0"}`}></div>
               </button>
-              <span className={`text-xs font-mono transition-colors ${isAnnual ? "text-ink-900 dark:text-paper-100 font-semibold" : "text-ink-500"}`}>
-                Annually <span className="text-[10px] text-moss-500 font-bold bg-moss-100 px-1.5 py-0.5 rounded">Save 20%</span>
+              <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${isAnnual ? "text-[#14213d] dark:text-[#f9fafb]" : "text-[#14213d]/40 dark:text-[#beb7a7]/40"}`}>
+                Annually <span className="text-[9px] text-[#5b7553] font-bold bg-[#5b7553]/10 px-1.5 py-0.5 rounded ml-1 border border-[#5b7553]/20">Save 20%</span>
               </span>
             </div>
           </div>
@@ -522,81 +584,81 @@ export default function Landing({ theme, onToggleTheme }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             
             {/* Starter Tier */}
-            <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 p-6 flex flex-col justify-between space-y-8">
+            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8">
               <div>
-                <h3 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">Starter</h3>
-                <p className="text-xs text-ink-500 dark:text-ink-300 mt-1">Perfect for solo founders & micro roasters</p>
-                <div className="mt-4 flex items-baseline text-ink-900 dark:text-paper-50 font-mono">
-                  <span className="text-4xl font-display font-bold">$0</span>
-                  <span className="text-xs text-ink-500 dark:text-ink-300">/ forever</span>
+                <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Starter</h3>
+                <p className="text-[11px] text-[#14213d]/50 dark:text-[#beb7a7]/50 mt-1">For solo suppliers & roasters</p>
+                <div className="mt-5 flex items-baseline text-[#14213d] dark:text-white font-mono">
+                  <span className="text-3xl font-display font-bold">$0</span>
+                  <span className="text-[10px] text-[#14213d]/50 dark:text-[#beb7a7]/50">/ month</span>
                 </div>
                 
-                <ul className="mt-6 space-y-3.5 text-xs text-ink-500 dark:text-ink-300">
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Up to 50 active leads</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Full Lead Timeline Log</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Follow-up scheduler</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Database-scoped RLS security</li>
+                <ul className="mt-6 space-y-3.5 text-xs text-[#14213d]/60 dark:text-[#beb7a7]/60 font-light">
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Up to 50 active leads</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Full Lead Timeline Log</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Follow-up scheduler</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Database-scoped RLS security</li>
                 </ul>
               </div>
               <Link
                 to="/signup"
-                className="w-full py-2.5 rounded-lg border border-ink-100 dark:border-ink-800 hover:bg-ink-100/60 dark:hover:bg-ink-800/60 transition-colors text-center text-xs font-semibold"
+                className="w-full py-2.5 rounded-xl border border-[#14213d]/15 dark:border-white/10 hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-all text-center text-[10px] font-bold uppercase tracking-wider text-[#14213d] dark:text-white"
               >
                 Get Started
               </Link>
             </div>
 
             {/* Roast Master Tier */}
-            <div className="rounded-xl border-2 border-gold-500 bg-paper-100 dark:bg-ink-950 p-6 flex flex-col justify-between space-y-8 relative">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-500 text-ink-950 text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+            <div className="rounded-2xl border-2 border-[#d8a64c] bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 relative">
+              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#d8a64c] text-white text-[9px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-widest">
                 Most Popular
               </span>
               <div>
-                <h3 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">Roast Master</h3>
-                <p className="text-xs text-ink-500 dark:text-ink-300 mt-1">Scale up your sales team operations</p>
-                <div className="mt-4 flex items-baseline text-ink-900 dark:text-paper-50 font-mono">
-                  <span className="text-4xl font-display font-bold">
+                <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Roast Master</h3>
+                <p className="text-[11px] text-[#14213d]/50 dark:text-[#beb7a7]/50 mt-1">Scale up your sales team operations</p>
+                <div className="mt-5 flex items-baseline text-[#14213d] dark:text-white font-mono">
+                  <span className="text-3xl font-display font-bold">
                     ${isAnnual ? "39" : "49"}
                   </span>
-                  <span className="text-xs text-ink-500 dark:text-ink-300">/ user / mo</span>
+                  <span className="text-[10px] text-[#14213d]/50 dark:text-[#beb7a7]/50">/ user / mo</span>
                 </div>
                 
-                <ul className="mt-6 space-y-3.5 text-xs text-ink-500 dark:text-ink-300">
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Unlimited leads</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> AI Assistant Script drafts</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Bulk CSV Import / Export</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Multi-user workspace sharing</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Priority support</li>
+                <ul className="mt-6 space-y-3.5 text-xs text-[#14213d]/60 dark:text-[#beb7a7]/60 font-light">
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Unlimited leads</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> AI Assistant Script drafts</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Bulk CSV Import / Export</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Multi-user workspace sharing</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Priority support</li>
                 </ul>
               </div>
               <Link
                 to="/signup"
-                className="w-full py-2.5 rounded-lg bg-gold-500 text-ink-950 hover:bg-gold-400 transition-colors text-center text-xs font-semibold shadow"
+                className="w-full py-2.5 rounded-xl bg-[#d8a64c] text-white hover:bg-[#c19036] transition-all text-center text-[10px] font-bold uppercase tracking-wider shadow-sm hover:scale-[1.02]"
               >
                 Start Free Trial
               </Link>
             </div>
 
             {/* Enterprise Tier */}
-            <div className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 p-6 flex flex-col justify-between space-y-8">
+            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8">
               <div>
-                <h3 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">Enterprise</h3>
-                <p className="text-xs text-ink-500 dark:text-ink-300 mt-1">For wholesale brands with custom workflows</p>
-                <div className="mt-4 flex items-baseline text-ink-900 dark:text-paper-50 font-mono">
-                  <span className="text-4xl font-display font-bold">Custom</span>
+                <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Enterprise</h3>
+                <p className="text-[11px] text-[#14213d]/50 dark:text-[#beb7a7]/50 mt-1">For customized logistics workflows</p>
+                <div className="mt-5 flex items-baseline text-[#14213d] dark:text-white font-mono">
+                  <span className="text-3xl font-display font-bold">Custom</span>
                 </div>
                 
-                <ul className="mt-6 space-y-3.5 text-xs text-ink-500 dark:text-ink-300">
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Everything in Roast Master</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Custom database RLS scoping</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> API integration & Webhooks</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> Dedicated success manager</li>
-                  <li className="flex items-center gap-2"><Check size={14} className="text-gold-500 shrink-0" /> SLA & Security review</li>
+                <ul className="mt-6 space-y-3.5 text-xs text-[#14213d]/60 dark:text-[#beb7a7]/60 font-light">
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Everything in Roast Master</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Custom database RLS scoping</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> API integration & Webhooks</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> Dedicated success manager</li>
+                  <li className="flex items-center gap-2"><Check size={13} className="text-[#d8a64c] shrink-0" /> SLA & Security review</li>
                 </ul>
               </div>
               <Link
                 to="/login"
-                className="w-full py-2.5 rounded-lg border border-ink-100 dark:border-ink-800 hover:bg-ink-100/60 dark:hover:bg-ink-800/60 transition-colors text-center text-xs font-semibold"
+                className="w-full py-2.5 rounded-xl border border-[#14213d]/15 dark:border-white/10 hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-all text-center text-[10px] font-bold uppercase tracking-wider text-[#14213d] dark:text-white"
               >
                 Contact Sales
               </Link>
@@ -607,34 +669,34 @@ export default function Landing({ theme, onToggleTheme }) {
       </section>
 
       {/* 6. FAQ Section */}
-      <section id="faq" className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="faq" className="py-24">
+        <div className="max-w-3xl mx-auto px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink-900 dark:text-paper-50">
+            <h2 className="font-display font-extrabold text-3xl md:text-4xl text-[#14213d] dark:text-[#f9fafb] tracking-tight">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm md:text-base text-ink-500 dark:text-ink-300">
-              Everything you need to know about setting up BrewFlow.
+            <p className="text-xs sm:text-sm text-[#14213d]/50 dark:text-[#beb7a7]/60 font-light">
+              Everything you need to know about getting started.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             {faqs.map((faq, index) => {
               const isOpen = !!openFaqs[index];
               return (
                 <div
                   key={index}
-                  className="rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 overflow-hidden transition-colors"
+                  className="rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 overflow-hidden transition-colors shadow-sm"
                 >
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full flex items-center justify-between p-5 text-left font-medium text-ink-900 dark:text-paper-100 hover:bg-ink-100/30 dark:hover:bg-ink-800/30 transition-colors"
+                    className="w-full flex items-center justify-between p-4.5 text-left font-bold text-[#14213d] dark:text-[#f9fafb] hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-colors cursor-pointer border-none"
                   >
-                    <span className="font-display text-sm sm:text-base">{faq.q}</span>
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    <span className="font-display text-sm">{faq.q}</span>
+                    {isOpen ? <ChevronUp size={14} className="text-[#d8a64c]" /> : <ChevronDown size={14} className="text-[#d8a64c]" />}
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 text-xs sm:text-sm text-ink-500 dark:text-ink-300 border-t border-ink-100 dark:border-ink-800 pt-3">
+                    <div className="px-4.5 pb-4.5 text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65 border-t border-[#14213d]/5 dark:border-white/5 pt-3 leading-relaxed font-light">
                       {faq.a}
                     </div>
                   )}
@@ -646,54 +708,54 @@ export default function Landing({ theme, onToggleTheme }) {
       </section>
 
       {/* 7. Footer */}
-      <footer className="border-t border-ink-100 dark:border-ink-800 bg-paper-100 dark:bg-ink-950 py-12 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <footer className="border-t border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef] dark:bg-[#0b1120] py-16 transition-colors">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gold-500 flex items-center justify-center">
-                  <Droplet size={18} className="text-ink-950" strokeWidth={2.5} />
+                <div className="w-8.5 h-8.5 rounded-xl bg-[#d8a64c] flex items-center justify-center">
+                  <Droplet size={18} className="text-[#14213d]" strokeWidth={2.5} />
                 </div>
-                <span className="font-display font-bold text-lg text-ink-900 dark:text-paper-100">
+                <span className="font-display font-bold text-lg text-[#14213d] dark:text-[#f9fafb]">
                   BrewFlow
                 </span>
               </div>
-              <p className="text-xs text-ink-500 dark:text-ink-300">
+              <p className="text-xs text-[#14213d]/50 dark:text-[#beb7a7]/50 leading-relaxed font-light">
                 The B2B Sales Operating System for physical wholesale brands. Scalable, secure, and intuitive.
               </p>
             </div>
             
             <div>
-              <h4 className="font-display text-xs font-semibold text-ink-900 dark:text-paper-100 uppercase tracking-widest mb-3">Product</h4>
-              <ul className="space-y-2 text-xs text-ink-500 dark:text-ink-300">
-                <li><a href="#features" className="hover:text-ink-900 dark:hover:text-paper-100">Features</a></li>
-                <li><a href="#demo" className="hover:text-ink-900 dark:hover:text-paper-100">Pipeline Demo</a></li>
-                <li><a href="#pricing" className="hover:text-ink-900 dark:hover:text-paper-100">Pricing</a></li>
+              <h4 className="font-display text-[10px] font-bold text-[#14213d] dark:text-white uppercase tracking-widest mb-3.5">Product</h4>
+              <ul className="space-y-2 text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65">
+                <li><a href="#features" className="hover:text-[#14213d] dark:hover:text-white">Features</a></li>
+                <li><a href="#demo" className="hover:text-[#14213d] dark:hover:text-white">Pipeline Demo</a></li>
+                <li><a href="#pricing" className="hover:text-[#14213d] dark:hover:text-white">Pricing</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-display text-xs font-semibold text-ink-900 dark:text-paper-100 uppercase tracking-widest mb-3">Resources</h4>
-              <ul className="space-y-2 text-xs text-ink-500 dark:text-ink-300">
-                <li><a href="#faq" className="hover:text-ink-900 dark:hover:text-paper-100">FAQs</a></li>
-                <li><a href="#" className="hover:text-ink-900 dark:hover:text-paper-100">API Documentation</a></li>
-                <li><a href="#" className="hover:text-ink-900 dark:hover:text-paper-100">Community Support</a></li>
+              <h4 className="font-display text-[10px] font-bold text-[#14213d] dark:text-white uppercase tracking-widest mb-3.5">Resources</h4>
+              <ul className="space-y-2 text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65">
+                <li><a href="#faq" className="hover:text-[#14213d] dark:hover:text-white">FAQs</a></li>
+                <li><a href="#" className="hover:text-[#14213d] dark:hover:text-white">API Documentation</a></li>
+                <li><a href="#" className="hover:text-[#14213d] dark:hover:text-white">Community Support</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-display text-xs font-semibold text-ink-900 dark:text-paper-100 uppercase tracking-widest mb-3">Legal</h4>
-              <ul className="space-y-2 text-xs text-ink-500 dark:text-ink-300">
-                <li><a href="#" className="hover:text-ink-900 dark:hover:text-paper-100">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-ink-900 dark:hover:text-paper-100">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-ink-900 dark:hover:text-paper-100">GDPR Compliance</a></li>
+              <h4 className="font-display text-[10px] font-bold text-[#14213d] dark:text-white uppercase tracking-widest mb-3.5">Legal</h4>
+              <ul className="space-y-2 text-xs text-[#14213d]/50 dark:text-[#beb7a7]/65">
+                <li><a href="#" className="hover:text-[#14213d] dark:hover:text-white">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-[#14213d] dark:hover:text-white">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-[#14213d] dark:hover:text-white">GDPR Compliance</a></li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-ink-100 dark:border-ink-800 flex flex-col sm:flex-row justify-between items-center text-xs text-ink-500 dark:text-ink-300 gap-4">
+          <div className="pt-8 border-t border-[#14213d]/5 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs text-[#14213d]/40 dark:text-[#beb7a7]/40 gap-4">
             <p>© {new Date().getFullYear()} BrewFlow AI. All rights reserved.</p>
-            <p className="font-mono text-[10px] text-ink-500">Built for GTM Operations & Wholesale Excellence</p>
+            <p className="font-mono text-[9px] text-[#14213d]/40">Built for GTM Operations & Wholesale Excellence</p>
           </div>
         </div>
       </footer>

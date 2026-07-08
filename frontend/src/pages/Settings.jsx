@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../lib/AuthContext";
 import { supabase } from "../lib/supabaseClient";
-import { Building, User, Sparkles, Check, AlertCircle } from "lucide-react";
+import { Building, User, Check, AlertCircle, AlertTriangle } from "lucide-react";
 
 export default function Settings() {
   const { user, organization, authError } = useAuth();
@@ -52,33 +52,33 @@ export default function Settings() {
 
   if (!organization) {
     return (
-      <div className="max-w-2xl mx-auto mt-10 p-6 rounded-xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 space-y-4">
-        <h2 className="font-display font-semibold text-lg text-ink-900 dark:text-paper-100">
+      <div className="max-w-2xl mx-auto mt-10 p-6 rounded-2xl border border-[#14213d]/10 dark:border-white/10 bg-white/70 dark:bg-[#111827]/70 space-y-4 backdrop-blur-md">
+        <h2 className="font-display font-bold text-lg text-[#14213d] dark:text-[#f9fafb]">
           Setting up your workspace…
         </h2>
-        <p className="text-sm text-ink-500 dark:text-ink-300">
+        <p className="text-xs text-[#14213d]/60 dark:text-[#beb7a7]/60">
           We are checking for your organization details or creating your workspace. This usually takes just a few seconds.
         </p>
         
         {authError ? (
-          <div className="p-4 rounded-lg bg-coral-100 dark:bg-coral-500/15 border border-coral-500/20 text-xs sm:text-sm space-y-3">
-            <p className="font-semibold text-coral-500">Database Diagnostic Alert:</p>
-            <p className="text-ink-600 dark:text-ink-300 font-mono leading-relaxed bg-paper-100/50 dark:bg-ink-950/50 p-2.5 rounded">
+          <div className="p-4.5 rounded-xl bg-coral-100/50 dark:bg-coral-500/10 border border-coral-500/20 text-xs sm:text-sm space-y-3">
+            <p className="font-bold text-coral-500">Database Diagnostic Alert:</p>
+            <p className="text-[#14213d]/80 dark:text-ink-300 font-mono leading-relaxed bg-paper-100/50 dark:bg-ink-950/50 p-2.5 rounded text-xs">
               {authError}
             </p>
-            <p className="text-ink-500 dark:text-ink-300">
+            <p className="text-xs text-ink-500 dark:text-ink-300">
               This error indicates that the Postgres database tables do not have standard access privileges granted to authenticated roles.
             </p>
             <div className="space-y-1.5">
-              <p className="font-semibold text-ink-700 dark:text-ink-200">How to fix this:</p>
-              <ol className="list-decimal list-inside space-y-1 text-ink-500 dark:text-ink-300">
+              <p className="font-bold text-ink-700 dark:text-ink-200">How to fix this:</p>
+              <ol className="list-decimal list-inside space-y-1 text-xs text-ink-500 dark:text-ink-300">
                 <li>Go to your **Supabase Dashboard**.</li>
                 <li>In the left sidebar, click on **SQL Editor**.</li>
                 <li>Click **New query**.</li>
                 <li>Paste the following SQL commands and click **Run**:</li>
               </ol>
             </div>
-            <pre className="p-3 rounded-lg bg-ink-950 text-paper-100 text-[10px] sm:text-xs overflow-x-auto font-mono">
+            <pre className="p-3 rounded-lg bg-ink-950 text-[#f9fafb] text-[10px] sm:text-xs overflow-x-auto font-mono">
 {`GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON public.organizations TO anon, authenticated, service_role;
 GRANT ALL ON public.leads TO anon, authenticated, service_role;
@@ -87,8 +87,8 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
             </pre>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-xs text-ink-500 dark:text-ink-300">
-            <div className="w-4 h-4 rounded-full border-2 border-t-gold-500 border-ink-100 dark:border-ink-800 animate-spin"></div>
+          <div className="flex items-center gap-2 text-xs text-[#14213d]/60 dark:text-[#beb7a7]/60">
+            <div className="w-4 h-4 rounded-full border-2 border-t-[#d8a64c] border-[#14213d]/10 dark:border-white/10 animate-spin"></div>
             <span>Connecting to Supabase and checking active session...</span>
           </div>
         )}
@@ -97,64 +97,64 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
   }
 
   return (
-    <div className="max-w-2xl space-y-6 font-body selection:bg-gold-500 selection:text-white">
+    <div className="max-w-2xl space-y-6 font-body selection:bg-[#d8a64c] selection:text-white">
       
-      {/* Business Profile Updates */}
+      {/* Business Profile Card Form */}
       <form
         onSubmit={handleUpdateProfile}
-        className="rounded-2xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-6 space-y-5"
+        className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-6 space-y-5 shadow-sm backdrop-blur-md"
       >
-        <div className="flex items-center gap-2.5 pb-3 border-b border-ink-100 dark:border-ink-800">
-          <Building size={18} className="text-gold-500" />
-          <h2 className="font-display font-bold text-base text-ink-900 dark:text-paper-100">
-            Business Profile
+        <div className="flex items-center gap-2.5 pb-3.5 border-b border-[#14213d]/5 dark:border-white/5">
+          <Building size={16} className="text-[#d8a64c]" />
+          <h2 className="font-display font-bold text-sm text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">
+            Workspace Configuration
           </h2>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-ink-900 dark:text-paper-200 block">Workspace Name</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Workspace Name</label>
             <input
               type="text"
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#f8f7f4] dark:bg-ink-950/40 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all font-sans"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-ink-900 dark:text-paper-200 block">Contact Email</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Contact Email</label>
             <input
               type="email"
               value={orgEmail}
               onChange={(e) => setOrgEmail(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#f8f7f4] dark:bg-ink-950/40 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all font-sans"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-ink-900 dark:text-paper-200 block">Product Category</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Product Category</label>
             <input
               type="text"
               value={orgCategory}
               onChange={(e) => setOrgCategory(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#f8f7f4] dark:bg-ink-950/40 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all font-sans"
             />
           </div>
         </div>
 
         {success && (
-          <p className="text-xs text-moss-500 bg-moss-100 dark:bg-moss-500/10 rounded-lg px-3 py-2 border border-moss-500/10 font-semibold flex items-center gap-1.5">
+          <p className="text-xs text-[#5b7553] bg-[#5b7553]/10 rounded-xl px-3 py-2 border border-[#5b7553]/15 font-bold flex items-center gap-1.5 animate-in fade-in duration-200">
             <Check size={12} />
             <span>{success}</span>
           </p>
         )}
 
         {error && (
-          <p className="text-xs text-coral-500 bg-coral-100 dark:bg-coral-500/10 rounded-lg px-3 py-2 border border-coral-500/10 font-semibold flex items-center gap-1.5">
+          <p className="text-xs text-[#e06656] bg-[#e06656]/10 rounded-xl px-3 py-2 border border-[#e06656]/15 font-bold flex items-center gap-1.5 animate-in fade-in duration-200">
             <AlertCircle size={12} />
             <span>{error}</span>
           </p>
@@ -163,28 +163,48 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
         <button
           type="submit"
           disabled={updating}
-          className="px-5 py-2.5 rounded-xl bg-[#0f172a] hover:bg-[#1e293b] text-white text-sm font-bold shadow transition-all cursor-pointer disabled:opacity-60 border-none"
+          className="px-5 py-2.5 rounded-xl bg-[#14213d] dark:bg-[#d8a64c] text-white dark:text-[#14213d] text-xs font-bold uppercase tracking-wider shadow transition-all cursor-pointer disabled:opacity-60 border-none hover:scale-[1.02]"
         >
           {updating ? "Saving..." : "Save Workspace Changes"}
         </button>
       </form>
 
       {/* Account Settings */}
-      <div className="rounded-2xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-6 space-y-4">
-        <div className="flex items-center gap-2.5 pb-3 border-b border-ink-100 dark:border-ink-800">
-          <User size={18} className="text-gold-500" />
-          <h2 className="font-display font-bold text-base text-ink-900 dark:text-paper-100">
+      <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-6 space-y-4 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-2.5 pb-3.5 border-b border-[#14213d]/5 dark:border-white/5">
+          <User size={16} className="text-[#d8a64c]" />
+          <h2 className="font-display font-bold text-sm text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">
             Account Profile
           </h2>
         </div>
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-ink-500">Sign-in Email</p>
-          <p className="text-sm font-mono text-ink-900 dark:text-paper-100">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sign-in Email Address</p>
+          <p className="text-xs font-mono font-bold text-[#14213d] dark:text-white">
             {user?.email || "loading..."}
           </p>
         </div>
       </div>
 
+      {/* Danger Zone */}
+      <div className="rounded-2xl border border-[#e06656]/20 bg-[#e06656]/5 p-6 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2.5 pb-3.5 border-b border-[#e06656]/15">
+          <AlertTriangle size={16} className="text-[#e06656]" />
+          <h2 className="font-display font-bold text-sm text-[#e06656] uppercase tracking-wider">
+            Danger Zone
+          </h2>
+        </div>
+        <p className="text-xs text-[#e06656]/85 font-light leading-relaxed">
+          Deleting your organization workspace is permanent and cannot be undone. All active B2B leads, interaction logs, and AI history entries will be completely removed.
+        </p>
+        <button
+          type="button"
+          onClick={() => alert("Please contact support at founder@brewflow.ai to delete your enterprise organization.")}
+          className="px-5 py-2.5 rounded-xl bg-[#e06656] text-white text-xs font-bold uppercase tracking-wider shadow hover:bg-red-700 transition-all cursor-pointer border-none"
+        >
+          Delete Workspace
+        </button>
+      </div>
+      
     </div>
   );
 }
