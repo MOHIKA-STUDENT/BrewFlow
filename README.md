@@ -170,21 +170,70 @@ supabase functions deploy generate-sales-copy
 
 ---
 
-## 6. How to Run Locally
+## 6. Complete Free Tier Deployment Guide
 
-1. **Install Dependencies:**
-   ```bash
-   cd frontend
-   npm install
-   ```
-2. **Configure Environment Variables:**
-   Create a `.env` file in the `frontend` folder with your Supabase keys:
-   ```env
-   VITE_SUPABASE_URL=https://your-project-id.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-public-key
-   ```
-3. **Start Development Server:**
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` to interact with the Sales Operating System.
+BrewFlow AI is built to be hosted entirely on **Free Tier** services:
+- **Database & Edge Functions:** Hosted on **Supabase** (Free Tier - includes free Postgres, Auth, and 5 Edge Functions).
+- **React Frontend:** Hosted on **Vercel** (Free Tier - includes free SSL, global CDN, and automatic Git deployments).
+
+---
+
+### Part A: Database & AI Edge Function (Supabase)
+
+#### 1. Create logging tables
+Run the SQL Setup script from **Section 5** inside the **Supabase SQL Editor** to create the RLS logging tables and grant database schema usage privileges.
+
+#### 2. Install Supabase CLI on Windows
+To deploy Edge Functions, you need the Supabase CLI. Open **PowerShell** as Administrator on your computer and run:
+```powershell
+winget install Supabase.CLI
+```
+*Note: After the installation finishes, close and reopen your PowerShell window to refresh environment paths.*
+
+#### 3. Login and link project
+In your PowerShell window, navigate to your project directory (`brewflow-ai`) and run:
+```powershell
+# 1. Log in to your Supabase CLI account
+supabase login
+
+# 2. Link your local directory to your online Supabase project
+# (Replace 'your-project-ref' with the reference ID from your Supabase Dashboard url)
+supabase link --project-ref your-project-ref
+```
+
+#### 4. Configure Gemini API Secrets
+Set the secure environment variable on Supabase (get your free key from [Google AI Studio](https://aistudio.google.com/)):
+```powershell
+supabase secrets set GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+#### 5. Deploy the Edge Function
+Run the deploy command from the project root folder:
+```powershell
+supabase functions deploy generate-sales-copy
+```
+
+---
+
+### Part B: Frontend Deployment (Vercel)
+
+Vercel hosts frontend React applications for free and automatically redeploys them every time you push changes to GitHub.
+
+#### 1. Push code to GitHub
+Make sure all your local files are committed and pushed to your repository:
+```bash
+git add .
+git commit -m "deploy: prep config"
+git push
+```
+
+#### 2. Connect and Deploy on Vercel
+1. Go to [Vercel](https://vercel.com/) and sign up using your **GitHub** account.
+2. Click **"Add New"** -> **"Project"**.
+3. Locate your **BrewFlow** repository and click **"Import"**.
+4. In the **Environment Variables** section, add your frontend environment variables:
+   - `VITE_SUPABASE_URL` = `https://your-project-id.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = `your-anon-public-key`
+5. Click **"Deploy"**.
+
+Vercel will compile your code and build your application. Within 1 minute, it will provide you with a public URL (e.g. `https://brewflow-ai.vercel.app`) to access your app from anywhere!
