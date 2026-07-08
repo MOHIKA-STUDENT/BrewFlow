@@ -2,9 +2,7 @@ import { useState } from "react";
 import { 
   Compass, 
   MapPin, 
-  Building, 
   Sparkles, 
-  TrendingUp, 
   Check, 
   X, 
   Phone, 
@@ -13,31 +11,21 @@ import {
   ShieldCheck, 
   AlertTriangle,
   ArrowRight,
-  HelpCircle
+  Search,
+  Building
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 import { createLead } from "../lib/leadsApi";
 import { AIService } from "../lib/aiService";
-import CustomSelect from "../components/CustomSelect";
 
-const CITY_OPTIONS = [
-  { value: "San Francisco", label: "San Francisco, CA" },
-  { value: "Portland", label: "Portland, OR" },
-  { value: "Chicago", label: "Chicago, IL" },
-  { value: "Los Angeles", label: "Los Angeles, CA" },
-  { value: "New York", label: "New York, NY" }
-];
-
-const INDUSTRY_OPTIONS = [
-  { value: "Café", label: "Specialty Cafes" },
-  { value: "Bakery", label: "Bakeries & Outlets" }
-];
+const SUGGESTED_CITIES = ["Mumbai, India", "Bangalore, India", "Delhi, India", "San Francisco, CA"];
+const SUGGESTED_INDUSTRIES = ["Cafes", "Bakeries", "Ice Cream Parlors", "Software Offices"];
 
 export default function LeadScout() {
   const { user, organization } = useAuth();
   const [companyDetails, setCompanyDetails] = useState("");
-  const [selectedCity, setSelectedCity] = useState("San Francisco");
-  const [selectedIndustry, setSelectedIndustry] = useState("Café");
+  const [targetLocation, setTargetLocation] = useState("Mumbai, India");
+  const [businessType, setBusinessType] = useState("Cafes");
   
   const [scouting, setScouting] = useState(false);
   const [prospects, setProspects] = useState([]);
@@ -47,9 +35,13 @@ export default function LeadScout() {
   const [error, setError] = useState("");
 
   const handleScout = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!companyDetails.trim()) {
       setError("Please describe your business value proposition.");
+      return;
+    }
+    if (!targetLocation.trim()) {
+      setError("Please specify a target city/location.");
       return;
     }
     setError("");
@@ -58,11 +50,12 @@ export default function LeadScout() {
     setAcceptedLog("");
 
     try {
-      // Run qualification scan through pre-verified registries in service
       const results = await AIService.scoutProspects({
         companyDetails,
-        targetLocation: selectedCity,
-        businessType: selectedIndustry
+        targetLocation,
+        businessType,
+        organizationId: organization.id,
+        userId: user.id
       });
       setProspects(results);
     } catch (err) {
@@ -83,7 +76,7 @@ export default function LeadScout() {
         email: prospect.email,
         website: prospect.website,
         address: prospect.address,
-        city: selectedCity,
+        city: targetLocation.split(",")[0].trim(),
         status: "New Lead",
         current_supplier: prospect.current_supplier,
         interested_products: prospect.interested_products,
@@ -149,34 +142,74 @@ export default function LeadScout() {
               <textarea
                 value={companyDetails}
                 onChange={(e) => setCompanyDetails(e.target.value)}
-                placeholder="e.g. We supply organic wholesale oat milk with premium barista froth capabilities to local brands."
+                placeholder="e.g. We supply organic A2 cow milk wholesale to local cafes and ice cream makers."
                 rows={4}
                 className="w-full p-3.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] placeholder:text-slate-400 transition-all resize-none shadow-inner"
               />
             </div>
 
-            {/* Target Location dropdown */}
-            <div className="space-y-1.5">
+            {/* Target Location text input */}
+            <div className="space-y-2">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
-                Target Logistics Region
+                Target Logistics Region / City
               </label>
-              <CustomSelect
-                value={CITY_OPTIONS.find(c => c.value === selectedCity)?.label || selectedCity}
-                onChange={setSelectedCity}
-                options={CITY_OPTIONS}
+              <input
+                type="text"
+                value={targetLocation}
+                onChange={(e) => setTargetLocation(e.target.value)}
+                placeholder="e.g. Mumbai, India"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all shadow-inner"
               />
+              
+              {/* City Suggestion Chips */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {SUGGESTED_CITIES.map(city => (
+                  <button
+                    key={city}
+                    type="button"
+                    onClick={() => setTargetLocation(city)}
+                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition-colors cursor-pointer ${
+                      targetLocation === city
+                        ? "bg-[#d8a64c] text-white border-transparent"
+                        : "bg-transparent border-[#14213d]/10 dark:border-white/10 text-slate-400 hover:text-[#d8a64c]"
+                    }`}
+                  >
+                    {city.split(",")[0]}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Target Business Type dropdown */}
-            <div className="space-y-1.5">
+            {/* Target Business Type text input */}
+            <div className="space-y-2">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
-                Target Industry
+                Target Industry / Keywords
               </label>
-              <CustomSelect
-                value={INDUSTRY_OPTIONS.find(i => i.value === selectedIndustry)?.label || selectedIndustry}
-                onChange={setSelectedIndustry}
-                options={INDUSTRY_OPTIONS}
+              <input
+                type="text"
+                value={businessType}
+                onChange={(e) => setBusinessType(e.target.value)}
+                placeholder="e.g. Cafes, Software Offices"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 bg-[#f8f7f4] dark:bg-ink-950/40 text-xs sm:text-sm outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all shadow-inner"
               />
+              
+              {/* Industry Suggestion Chips */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {SUGGESTED_INDUSTRIES.map(ind => (
+                  <button
+                    key={ind}
+                    type="button"
+                    onClick={() => setBusinessType(ind)}
+                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold border transition-colors cursor-pointer ${
+                      businessType === ind
+                        ? "bg-[#d8a64c] text-white border-transparent"
+                        : "bg-transparent border-[#14213d]/10 dark:border-white/10 text-slate-400 hover:text-[#d8a64c]"
+                    }`}
+                  >
+                    {ind}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {error && (
@@ -245,7 +278,7 @@ export default function LeadScout() {
               <AlertTriangle size={32} className="text-[#e06656]/60 mx-auto" />
               <p className="text-xs font-bold uppercase tracking-wider text-[#e06656]">No verified prospects found</p>
               <p className="text-[11px] text-[#e06656]/80 max-w-sm mx-auto">
-                No matching verified businesses were located in the registry for this location and business type. Try searching SF, Portland, or LA.
+                No matching verified businesses were located in the registry for this location. Try typing Mumbai, Bangalore, or San Francisco.
               </p>
             </div>
           )}
@@ -285,7 +318,7 @@ export default function LeadScout() {
                   {/* Calculated metrics stats box */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#f8f7f4] dark:bg-ink-950/40 border border-[#14213d]/5 rounded-xl p-3.5 text-center">
                     <div>
-                      <span className="text-[8px] font-bold text-slate-400 uppercase block">Est Revenue</span>
+                      <span className="text-[8px] font-bold text-slate-400 uppercase block">Est Value</span>
                       <span className="text-xs font-mono font-bold text-[#14213d] dark:text-[#f9fafb] block mt-0.5">
                         ${prospect.potential_revenue.toLocaleString()}/mo
                       </span>
@@ -333,9 +366,13 @@ export default function LeadScout() {
                     </div>
                     <div className="flex items-center gap-2 truncate">
                       <Globe size={12} className="text-[#d8a64c] shrink-0" />
-                      <a href={prospect.website} target="_blank" rel="noopener noreferrer" className="underline hover:text-[#d8a64c] truncate">
-                        {prospect.website.replace("https://", "")}
-                      </a>
+                      {prospect.website !== "Not Available" ? (
+                        <a href={prospect.website} target="_blank" rel="noopener noreferrer" className="underline hover:text-[#d8a64c] truncate">
+                          {prospect.website.replace("https://", "")}
+                        </a>
+                      ) : (
+                        <span>Not Available</span>
+                      )}
                     </div>
                   </div>
 

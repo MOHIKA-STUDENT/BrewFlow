@@ -106,9 +106,16 @@ serve(async (req) => {
     }
 
     bodyJson = await req.json()
-    const { leadId, promptType, organizationId, userId } = bodyJson
-    if (!leadId || !promptType || !organizationId) {
-      return new Response(JSON.stringify({ error: 'Missing required body parameters (leadId, promptType, organizationId)' }), {
+    const { leadId, promptType, organizationId, userId, companyDetails, targetLocation, businessType } = bodyJson
+    if (!promptType || !organizationId) {
+      return new Response(JSON.stringify({ error: 'Missing required body parameters (promptType, organizationId)' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    if (promptType !== 'scout_prospects' && !leadId) {
+      return new Response(JSON.stringify({ error: 'Missing required leadId parameter' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
@@ -121,19 +128,61 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    // Fetch lead details. If RLS blocks it, this returns an error or no data.
-    const { data: lead, error: leadError } = await supabaseClient
-      .from('leads')
-      .select('*')
-      .eq('id', leadId)
-      .single()
+    let lead = null;
+    if (promptType !== 'scout_prospects') {
+      // Fetch lead details. If RLS blocks it, this returns an error or no data.
+      const { data: leadData, error: leadError } = await supabaseClient
+        .from('leads')
+        .select('*')
+        .eq('id', leadId)
+        .single()
 
-    if (leadError || !lead) {
-      console.error('Lead authorization failed or lead not found:', leadError)
-      return new Response(JSON.stringify({ error: 'Access denied or Lead not found.' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
+      if (leadError || !leadData) {
+        console.error('Lead authorization failed or lead not found:', leadError)
+        return new Response(JSON.stringify({ error: 'Access denied or Lead not found.' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      lead = leadData;
+      
+      // Resolve template prompt
+      const promptTemplateFn = PROMPT_TEMPLATES[promptType as keyof typeof PROMPT_TEMPLATES]
+      if (!promptTemplateFn) {
+        return new Response(JSON.stringify({ error: `Invalid promptType: ${promptType}` }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      promptText = promptTemplateFn(lead)
+    } else {
+      // Sourcing prospects prompt
+      promptText = `
+        You are a B2B sales prospector and lead finder.
+        The supplier's company details are: "${companyDetails || ''}"
+        They want to target prospects of type "${businessType || ''}" located in "${targetLocation || ''}".
+        Find 3 real, existing businesses in "${targetLocation || ''}" that match this criteria.
+        Output ONLY a valid JSON array of objects (no conversational text, no backticks, no wrapper other than the array).
+        
+        Required JSON format:
+        [
+          {
+            "business_name": "Name of Business",
+            "business_type": "Specific Type",
+            "address": "Street Address, City",
+            "phone": "Real Phone Number or 'Not Available'",
+            "email": "Real Email Address or 'Not Available'",
+            "website": "Real Website URL or 'Not Available'",
+            "interested_products": "Specific products they would buy from the user",
+            "current_supplier": "Likely supplier or 'Unknown'",
+            "consumption": "Estimated monthly consumption volume (e.g. 300 liters or 20 cases)"
+          }
+        ]
+        
+        Absolute Rules:
+        - Never hallucinate contact details, phone numbers, or emails. If you cannot verify them, return 'Not Available'.
+        - Only return real, existing businesses in "${targetLocation || ''}".
+      `;
     }
 
     // Get Gemini API Key from environment secrets
@@ -144,16 +193,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
-
-    // Resolve template prompt
-    const promptTemplateFn = PROMPT_TEMPLATES[promptType as keyof typeof PROMPT_TEMPLATES]
-    if (!promptTemplateFn) {
-      return new Response(JSON.stringify({ error: `Invalid promptType: ${promptType}` }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-    promptText = promptTemplateFn(lead)
 
     // Invoke Google's Gemini API and measure latency
     const startTime = Date.now()
@@ -190,7 +229,7 @@ serve(async (req) => {
       .from('ai_generations')
       .insert({
         organization_id: organizationId,
-        lead_id: leadId,
+        lead_id: leadId || null,
         user_id: userId || null,
         prompt_type: promptType,
         provider: 'gemini',

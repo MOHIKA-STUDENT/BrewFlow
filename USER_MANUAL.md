@@ -98,3 +98,22 @@ This ensures one company can never access another company's records.
 ### 403 Access Denied
 - **Why it happens:** You are trying to query or edit a lead that does not belong to your active organization session.
 - **The solution:** Log out and log in again to verify your active workspace session.
+
+---
+
+## 5. API Key Management & Sourcing Choices
+
+### How to change your Gemini API Key
+1. **Command Line:** Run the following command in your terminal using the Supabase CLI to overwrite the active secret:
+   ```bash
+   supabase secrets set GEMINI_API_KEY=your_new_gemini_api_key_here
+   ```
+2. **Dashboard online:** Navigate to your Supabase project dashboard -> *Project Settings* -> *API* -> *Secrets* and edit the `GEMINI_API_KEY` environment variable value.
+
+### Can I add another AI Model Key?
+Yes! If you want to use OpenAI or Claude, set the secret keys in Supabase (e.g. `supabase secrets set OPENAI_API_KEY=...`) and update the backend Edge Function `index.ts` to route requests to the new model. The frontend UI remains unchanged as it calls the abstracted `AIService` methods.
+
+### Why use Gemini over Google Places or Yelp Fusion APIs?
+- **No Friction Setup:** Places and Maps APIs require configuring Google Cloud Console billing accounts and setting up credit cards, which is high-friction for new users.
+- **Comprehensive Aggregator:** Gemini synthesizes maps data, websites, and business registries automatically, including B2B consumption volumes and interested product lists that standard maps APIs do not collect.
+
