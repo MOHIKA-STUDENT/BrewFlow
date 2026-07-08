@@ -42,7 +42,7 @@ Best regards,
 BrewFlow Partner Team`;
 
     case "whatsapp_followup":
-      return `Hi ${contactPerson}! 👋 This is the partner team reaching out. We wanted to see if you had a brief moment to check out our premium wholesale price list for ${products}. Hope you are having a productive week at ${businessName}! Let me know if we can ship a free sample box to your location in ${city}.`;
+      return `Hi ${contactPerson}! 👋 This is the partner team reaching out. We wanted to see if you had a brief moment to check out our wholesale price list for ${products}. Hope you are having a productive week at ${businessName}! Let me know if we can ship a free sample box to your location in ${city}.`;
 
     case "call_script":
       return `[SALES REP COLD CALL OPENER]
@@ -136,7 +136,8 @@ export const AIService = {
       };
 
     } catch (err) {
-      console.warn(`[AIService] Edge Function invocation failed. Triggering local template fallback:`, err.message);
+      console.warn(`[AIService] Edge Function invocation failed:`, err.message || err);
+      console.dir(err);
       
       // Fetch lead details locally to feed the fallback generator
       const lead = await getLead(leadId);
@@ -270,7 +271,8 @@ export const AIService = {
       throw new Error("Invalid array format returned from AI.");
 
     } catch (err) {
-      console.warn(`[AIService] Dynamic prospect scout failed. Triggering local verified fallback registry:`, err.message);
+      console.warn(`[AIService] Dynamic prospect scout failed:`, err.message || err);
+      console.dir(err);
       
       // Fallback search in local pre-verified database (supporting both Indian and global firms)
       const VERIFIED_DIRECTORY = [
