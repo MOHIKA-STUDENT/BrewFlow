@@ -351,6 +351,48 @@ export const AIService = {
           type_key: "cafe"
         },
         {
+          business_name: "Kyani & Co.",
+          business_type: "Irani Café",
+          city: "Mumbai, India",
+          address: "JSS Road, Jer Mahal Estate, Kalbadevi, Mumbai, MH 400002",
+          phone: "+91 22 2201 1464",
+          email: "Not Available",
+          website: "Not Available",
+          interested_products: "Full Cream Milk, Condensed Milk, Butter",
+          current_supplier: "Amul Wholesale",
+          consumption: "400 liters/day",
+          city_key: "mumbai",
+          type_key: "cafe"
+        },
+        {
+          business_name: "Cafe Goodluck",
+          business_type: "Specialty Café",
+          city: "Pune, India",
+          address: "Goodluck Chowk, Bhandarkar Rd, Pune, MH 411004",
+          phone: "+91 20 2567 6093",
+          email: "Not Available",
+          website: "Not Available",
+          interested_products: "Fresh Milk, Table Butter, Tea Wholesaler",
+          current_supplier: "Chitale Dairy",
+          consumption: "700 liters/day",
+          city_key: "pune",
+          type_key: "cafe"
+        },
+        {
+          business_name: "Glen's Bakehouse",
+          business_type: "Bakery & Café",
+          city: "Bangalore, India",
+          address: "2nd Stage, Indiranagar, Bengaluru, KA 560038",
+          phone: "+91 80 4122 8773",
+          email: "Not Available",
+          website: "Not Available",
+          interested_products: "Barista Blend Oat Milk, Wheat Flour, Yeast",
+          current_supplier: "Local Distributor",
+          consumption: "300 liters/day",
+          city_key: "bangalore",
+          type_key: "bakery"
+        },
+        {
           business_name: "Le Plaisir",
           business_type: "Bakery & Café",
           city: "Pune, India",
@@ -452,7 +494,7 @@ export const AIService = {
           item.city.toLowerCase().includes(searchLocation) ||
           searchLocation.includes(item.city_key);
         
-        // Type / Keyword Match check: checks both ways (e.g. "cafe" in "cafes" or "cafes" in "specialty café")
+        // Type / Keyword Match check
         const typeMatch = !searchTypeNormalized || 
           item.type_key.toLowerCase().includes(searchTypeNormalized) || 
           searchTypeNormalized.includes(item.type_key.toLowerCase()) ||
