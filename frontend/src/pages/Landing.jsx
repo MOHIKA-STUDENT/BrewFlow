@@ -23,12 +23,7 @@ export default function Landing({ theme, onToggleTheme }) {
   const { session } = useAuth();
   const navigate = useNavigate();
   
-  // Redirect if logged in
-  useEffect(() => {
-    if (session) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [session, navigate]);
+  // Redirect if logged in is removed so users can view the landing page directly.
   
   // Interactive mock lead status changer state
   const [mockLeadStatus, setMockLeadStatus] = useState("Interested");

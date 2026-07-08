@@ -12,21 +12,21 @@
    IBM Plex Mono for numbers/data tables.
    ========================================================== */
 @theme {
-  --color-ink-950: #020617; /* Slate 950 - deep dark background */
-  --color-ink-900: #0f172a; /* Slate 900 - card background dark */
-  --color-ink-800: #1e293b; /* Slate 800 - borders / inputs dark */
-  --color-ink-700: #334155; /* Slate 700 - text secondary dark */
-  --color-ink-500: #64748b; /* Slate 500 - text secondary light / icon */
-  --color-ink-300: #94a3b8; /* Slate 300 - borders / placeholders dark */
-  --color-ink-100: #cbd5e1; /* Slate 300/200 - borders light */
+  --color-ink-950: #0f172a; /* Slate 900 - soft dark background (easy on the eyes) */
+  --color-ink-900: #1e293b; /* Slate 800 - dark card background */
+  --color-ink-800: #334155; /* Slate 700 - dark borders / focus */
+  --color-ink-700: #475569; /* Slate 600 - text secondary dark */
+  --color-ink-500: #64748b; /* Slate 500 - text secondary light / icons */
+  --color-ink-300: #94a3b8; /* Slate 400 - placeholders / borders */
+  --color-ink-100: #cbd5e1; /* Slate 300 - borders light */
 
   --color-paper-50: #ffffff; /* White - card background light */
-  --color-paper-100: #f8fafc; /* Slate 50 - page background light */
-  --color-paper-200: #f1f5f9; /* Slate 100 - borders / inputs light */
+  --color-paper-100: #f8fafc; /* Slate 50 - soft page background (not bright white) */
+  --color-paper-200: #f1f5f9; /* Slate 100 - active sidebar/inputs background */
 
   --color-gold-400: #6366f1; /* Indigo 400 - accent hover */
   --color-gold-500: #4f46e5; /* Indigo 500 - primary brand accent */
-  --color-gold-600: #3730a3; /* Indigo 800/700 - accent dark hover */
+  --color-gold-600: #3730a3; /* Indigo 600 - accent dark hover */
 
   --color-moss-500: #10b981; /* Emerald 500 - won / customer */
   --color-moss-100: #d1fae5; /* Emerald 100 - won badge light */

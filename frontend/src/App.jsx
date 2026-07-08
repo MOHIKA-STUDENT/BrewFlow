@@ -75,7 +75,7 @@ function AppShell({ theme, setTheme }) {
 function Router({ theme, setTheme }) {
   return (
     <Routes>
-      <Route path="/" element={<Landing theme={theme} onToggleTheme={setTheme} />} />
+      <Route path="/" element={<Landing theme={theme} onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))} />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/check-email" element={<CheckEmail />} />
