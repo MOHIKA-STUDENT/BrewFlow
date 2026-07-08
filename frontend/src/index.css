@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* Enable class-based dark mode toggling in Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================
+   BrewFlow AI — Design Tokens
+   Palette: "Sleek Slate & Indigo" — clean professional tech SaaS look.
+   Indigo as primary accent, crisp white and slate-50/100 backgrounds,
+   slate-900/950 dark base. Emerald for won states, Rose for lost/alert.
+   Space Grotesk for display type, Inter for body copy,
+   IBM Plex Mono for numbers/data tables.
+   ========================================================== */
+@theme {
+  --color-ink-950: #020617; /* Slate 950 - deep dark background */
+  --color-ink-900: #0f172a; /* Slate 900 - card background dark */
+  --color-ink-800: #1e293b; /* Slate 800 - borders / inputs dark */
+  --color-ink-700: #334155; /* Slate 700 - text secondary dark */
+  --color-ink-500: #64748b; /* Slate 500 - text secondary light / icon */
+  --color-ink-300: #94a3b8; /* Slate 300 - borders / placeholders dark */
+  --color-ink-100: #cbd5e1; /* Slate 300/200 - borders light */
+
+  --color-paper-50: #ffffff; /* White - card background light */
+  --color-paper-100: #f8fafc; /* Slate 50 - page background light */
+  --color-paper-200: #f1f5f9; /* Slate 100 - borders / inputs light */
+
+  --color-gold-400: #6366f1; /* Indigo 400 - accent hover */
+  --color-gold-500: #4f46e5; /* Indigo 500 - primary brand accent */
+  --color-gold-600: #3730a3; /* Indigo 800/700 - accent dark hover */
+
+  --color-moss-500: #10b981; /* Emerald 500 - won / customer */
+  --color-moss-100: #d1fae5; /* Emerald 100 - won badge light */
+
+  --color-coral-500: #ef4444; /* Rose 500 - lost / delete */
+  --color-coral-100: #fee2e2; /* Rose 100 - lost badge light */
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+html {
+  font-family: var(--font-body);
+}
+
+body {
+  background-color: var(--color-paper-100);
+  color: var(--color-ink-900);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+  background-color: var(--color-ink-950);
+  color: var(--color-paper-100);
+}
+
+::selection {
+  background-color: var(--color-gold-500);
+  color: #ffffff;
+}

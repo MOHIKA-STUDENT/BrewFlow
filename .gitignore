@@ -1,0 +1,23 @@
+# Dependency directories
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+build/
+**/build/
+
+# Environment files and credentials
+.env
+.env.local
+.env.*
+**/.env
+**/.env.local
+**/.env.*
+
+# Local scratch and temporary files
+scratch/
+**/scratch/
+.DS_Store
+Thumbs.db
