@@ -22,3 +22,18 @@ scratch/
 .DS_Store
 Thumbs.db
 PERSONAL_README.md
+
+# Personal B2B documentation guides (local only)
+API.md
+ARCHITECTURE.md
+CHANGELOG.md
+DATABASE.md
+DEPLOYMENT.md
+DEVELOPMENT_GUIDE.md
+FEATURES.md
+PROJECT_STATUS.md
+ROADMAP.md
+SECURITY.md
+TESTING.md
+USER_MANUAL.md
+
