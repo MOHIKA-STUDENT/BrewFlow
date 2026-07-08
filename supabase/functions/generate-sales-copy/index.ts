@@ -170,7 +170,9 @@ serve(async (req) => {
           const query = `[out:json];(node[amenity=cafe](around:15000,${lat},${lon});node[amenity=bakery](around:15000,${lat},${lon}););out 10;`;
           const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
           
-          const overpassRes = await fetch(overpassUrl);
+          const overpassRes = await fetch(overpassUrl, {
+            headers: { 'User-Agent': 'BrewFlow-Sales-OS/1.0 (support@brewflow.ai)' }
+          });
           const overpassData = await overpassRes.json();
           const elements = overpassData.elements || [];
           
@@ -234,7 +236,7 @@ serve(async (req) => {
     }
 
     const startTime = Date.now()
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`
     const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: {
