@@ -85,6 +85,119 @@ const PROMPT_TEMPLATES = {
   `
 }
 
+/**
+ * Intelligent Universal AI Router
+ * Auto-detects vendor/model by API key prefix and queries the correct provider endpoint.
+ */
+async function callUniversalAI(apiKey: string, promptText: string): Promise<{ text: string, provider: string, model: string }> {
+  const cleanKey = apiKey.trim();
+
+  // 1. Anthropic (Claude)
+  if (cleanKey.startsWith("sk-ant-")) {
+    console.log("[Universal AI] Routing to Anthropic Claude 3.5 Sonnet...");
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": cleanKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "claude-3-5-sonnet-20240620",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: promptText }]
+      })
+    });
+    if (!response.ok) {
+      throw new Error(`Anthropic returned error: ${response.status} - ${await response.text()}`);
+    }
+    const data = await response.json();
+    return {
+      text: data.content?.[0]?.text || "",
+      provider: "Anthropic",
+      model: "claude-3-5-sonnet"
+    };
+  }
+
+  // 2. Groq (Llama-3)
+  if (cleanKey.startsWith("gsk_")) {
+    console.log("[Universal AI] Routing to Groq Llama-3...");
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${cleanKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama3-8b-8192",
+        messages: [{ role: "user", content: promptText }]
+      })
+    });
+    if (!response.ok) {
+      throw new Error(`Groq returned error: ${response.status} - ${await response.text()}`);
+    }
+    const data = await response.json();
+    return {
+      text: data.choices?.[0]?.message?.content || "",
+      provider: "Groq",
+      model: "llama-3-8b"
+    };
+  }
+
+  // 3. OpenAI (GPT-4o)
+  if (cleanKey.startsWith("sk-") || cleanKey.startsWith("sk-proj-")) {
+    console.log("[Universal AI] Routing to OpenAI GPT-4o...");
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${cleanKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: promptText }]
+      })
+    });
+    if (!response.ok) {
+      throw new Error(`OpenAI returned error: ${response.status} - ${await response.text()}`);
+    }
+    const data = await response.json();
+    return {
+      text: data.choices?.[0]?.message?.content || "",
+      provider: "OpenAI",
+      model: "gpt-4o"
+    };
+  }
+
+  // 4. Default: Google Gemini
+  console.log("[Universal AI] Routing to Google Gemini 1.5 Flash...");
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${cleanKey}`;
+  const response = await fetch(geminiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{ text: promptText }]
+      }]
+    })
+  });
+  if (!response.ok) {
+    throw new Error(`Gemini returned error: ${response.status} - ${await response.text()}`);
+  }
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error("Gemini returned empty text response");
+  }
+  return {
+    text,
+    provider: "Gemini",
+    model: "gemini-1.5-flash"
+  };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -166,7 +279,6 @@ serve(async (req) => {
           const lon = parseFloat(geocodeData[0].lon);
           console.log(`[Edge Scout] Resolved coordinates: lat=${lat}, lon=${lon}`);
           
-          // Query Overpass for cafes and bakeries within 15km of target city coordinates
           const query = `[out:json];(node[amenity=cafe](around:15000,${lat},${lon});node[amenity=bakery](around:15000,${lat},${lon}););out 10;`;
           const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
           
@@ -189,8 +301,6 @@ serve(async (req) => {
         console.error(`[Edge Scout] Overpass API query failed, using AI baseline:`, scoutErr);
       }
 
-      // If Firecrawl Key is present, we could scrape websites for matches.
-      const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY') || "";
       const scoutDataString = scoutedElements.length > 0 
         ? JSON.stringify(scoutedElements.slice(0, 4))
         : "No local coordinates found. Please suggest real existing targets from memory.";
@@ -227,42 +337,23 @@ serve(async (req) => {
       `;
     }
 
-    const apiKey = Deno.env.get('GEMINI_API_KEY')
+    // Read Key from any configured environment secret
+    const apiKey = Deno.env.get('UNIVERSAL_AI_KEY') ||
+                   Deno.env.get('GEMINI_API_KEY') ||
+                   Deno.env.get('OPENAI_API_KEY') ||
+                   Deno.env.get('ANTHROPIC_API_KEY') ||
+                   Deno.env.get('GROQ_API_KEY');
+
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Gemini API Key is not configured on Supabase Secrets' }), {
+      return new Response(JSON.stringify({ error: 'No AI Provider Key is configured on Supabase Secrets. Please configure UNIVERSAL_AI_KEY.' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
     const startTime = Date.now()
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`
-    const response = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: promptText }]
-        }]
-      })
-    })
+    const { text: resultText, provider, model } = await callUniversalAI(apiKey, promptText);
     const latencyMs = Date.now() - startTime
-
-    if (!response.ok) {
-      const errText = await response.text()
-      console.error('Gemini API call failed:', errText)
-      throw new Error(`Gemini API returned error: ${response.status} - ${errText}`)
-    }
-
-    const resJson = await response.json()
-    const resultText = resJson?.candidates?.[0]?.content?.parts?.[0]?.text
-    const tokensUsed = resJson?.usageMetadata?.totalTokenCount || null
-
-    if (!resultText) {
-      throw new Error('Gemini API returned empty text response')
-    }
 
     const { error: logError } = await supabaseClient
       .from('ai_generations')
@@ -271,12 +362,12 @@ serve(async (req) => {
         lead_id: leadId || null,
         user_id: userId || null,
         prompt_type: promptType,
-        provider: 'gemini',
-        model: 'gemini-1.5-flash',
+        provider: provider.toLowerCase(),
+        model: model,
         prompt: promptText,
         response: resultText,
         status: 'completed',
-        tokens_used: tokensUsed,
+        tokens_used: null,
         latency_ms: latencyMs,
         error_message: null
       })
@@ -287,8 +378,8 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       text: resultText,
-      provider: 'gemini',
-      model: 'gemini-1.5-flash'
+      provider: provider,
+      model: model
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -297,7 +388,7 @@ serve(async (req) => {
   } catch (err: any) {
     console.error('Edge Function Exception:', err)
     
-    if (bodyJson.organizationId && bodyJson.leadId && authHeader) {
+    if (bodyJson.organizationId && authHeader) {
       try {
         const supabaseClient = createClient(
           Deno.env.get('SUPABASE_URL') ?? '',
@@ -311,8 +402,8 @@ serve(async (req) => {
             lead_id: bodyJson.leadId || null,
             user_id: bodyJson.userId || null,
             prompt_type: bodyJson.promptType || 'unknown',
-            provider: 'gemini',
-            model: 'gemini-1.5-flash',
+            provider: 'unknown',
+            model: 'unknown',
             prompt: promptText || bodyJson.promptType || 'generation request',
             response: '',
             status: 'failed',
