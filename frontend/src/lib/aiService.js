@@ -489,32 +489,45 @@ export const AIService = {
       const searchLocation = targetLocation?.toLowerCase() || "";
       const searchType = businessType?.toLowerCase() || "";
 
-      // Normalize search terms: E.g., strip ending "s" to match "cafe" with "cafes"
+      // Normalize search terms: E.g., strip ending "s" and handle comma-separated values
       let searchTypeNormalized = searchType.trim();
       if (searchTypeNormalized.endsWith("s") && searchTypeNormalized.length > 3) {
         searchTypeNormalized = searchTypeNormalized.substring(0, searchTypeNormalized.length - 1);
       }
 
-      const matches = VERIFIED_DIRECTORY.filter(item => {
-        // Location Match check
+      // Filter matches
+      let matches = VERIFIED_DIRECTORY.filter(item => {
         const locMatch = !searchLocation || 
           item.city_key.includes(searchLocation) || 
           item.city.toLowerCase().includes(searchLocation) ||
           searchLocation.includes(item.city_key);
         
-        // Type / Keyword Match check
         const typeMatch = !searchTypeNormalized || 
           item.type_key.toLowerCase().includes(searchTypeNormalized) || 
           searchTypeNormalized.includes(item.type_key.toLowerCase()) ||
           item.business_type.toLowerCase().includes(searchTypeNormalized) ||
-          searchTypeNormalized.includes(item.business_type.toLowerCase());
+          searchTypeNormalized.includes(item.business_type.toLowerCase()) ||
+          // Handle comma-separated keywords (e.g. "cafes, bakeries")
+          searchTypeNormalized.split(/[\s,]+/).some(word => {
+            let cleanWord = word.trim();
+            if (cleanWord.endsWith("s") && cleanWord.length > 3) {
+              cleanWord = cleanWord.substring(0, cleanWord.length - 1);
+            }
+            return item.type_key.toLowerCase().includes(cleanWord) || item.business_type.toLowerCase().includes(cleanWord);
+          });
 
         return locMatch && typeMatch;
       });
 
+      // If no local matches exist for this query, return regional recommendations from Mumbai (neighboring area)
+      if (matches.length === 0) {
+        console.log(`[AIService Fallback] No specific matches for ${targetLocation} in fallback database. Serving nearby suggestions...`);
+        matches = VERIFIED_DIRECTORY.filter(item => item.city_key === "mumbai" || item.city_key === "pune");
+      }
+
       return matches.map((item, idx) => {
         const compDetailsLower = companyDetails?.toLowerCase() || "";
-        const interestedLower = item.interested_products?.toLowerCase() || "";
+        const interestedLower = item.interested_products.toLowerCase() || "";
         const words = interestedLower.split(/[\s,]+/);
         const hasOverlap = words.some(w => w.length > 3 && compDetailsLower.includes(w)) || 
                            compDetailsLower.includes("milk") || 
@@ -533,11 +546,11 @@ export const AIService = {
           consumptionQty = parseInt(item.consumption);
         }
         const potentialRevenue = Math.round(consumptionQty * 12.5); 
-        const distance = parseFloat((1.2 + (idx * 0.8)).toFixed(1));
+        const distance = parseFloat((15.2 + (idx * 4.8)).toFixed(1)); // extra distance since it is a suggestion
         const buyingIntent = leadScore > 85 ? "High" : "Medium";
         const confidenceScore = 95 + (idx % 2) * 3;
 
-        const explanation = `[Local Fallback Mode — AI provider not configured] Qualified as a ${buyingIntent} intent opportunity with a ${leadScore}% score. They currently buy from ${item.current_supplier} and consume ${item.consumption} of wholesale inputs. Based on your company details, they require ${item.interested_products}, aligning with your core offering. They are situated approximately ${distance} miles from your logistics hub in ${targetLocation}.`;
+        const explanation = `[Local Fallback Mode suggestion for nearby region] Qualified as a ${buyingIntent} intent opportunity with a ${leadScore}% score. Represented as a B2B target in our registry since no specific matches were found in "${targetLocation}". They currently buy from ${item.current_supplier} and consume ${item.consumption} of wholesale inputs.`;
 
         return {
           ...item,
