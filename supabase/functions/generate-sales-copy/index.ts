@@ -86,12 +86,10 @@ const PROMPT_TEMPLATES = {
 }
 
 serve(async (req) => {
-  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  // Define variables in scope for catch-block logging
   let bodyJson: any = {}
   let authHeader = ""
   let promptText = ""
@@ -121,7 +119,6 @@ serve(async (req) => {
       })
     }
 
-    // Initialize Supabase Client with the user's JWT to auto-enforce RLS!
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -130,7 +127,6 @@ serve(async (req) => {
 
     let lead = null;
     if (promptType !== 'scout_prospects') {
-      // Fetch lead details. If RLS blocks it, this returns an error or no data.
       const { data: leadData, error: leadError } = await supabaseClient
         .from('leads')
         .select('*')
@@ -146,7 +142,6 @@ serve(async (req) => {
       }
       lead = leadData;
       
-      // Resolve template prompt
       const promptTemplateFn = PROMPT_TEMPLATES[promptType as keyof typeof PROMPT_TEMPLATES]
       if (!promptTemplateFn) {
         return new Response(JSON.stringify({ error: `Invalid promptType: ${promptType}` }), {
@@ -156,13 +151,58 @@ serve(async (req) => {
       }
       promptText = promptTemplateFn(lead)
     } else {
-      // Sourcing prospects prompt
+      // 100% Free Scouting Sourcing: Overpass API & Nominatim
+      let scoutedElements = [];
+      try {
+        console.log(`[Edge Scout] Geocoding target region: ${targetLocation}`);
+        const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(targetLocation)}&format=json&limit=1`;
+        const geocodeRes = await fetch(geocodeUrl, {
+          headers: { 'User-Agent': 'BrewFlow-Sales-OS/1.0 (support@brewflow.ai)' }
+        });
+        const geocodeData = await geocodeRes.json();
+        
+        if (geocodeData && geocodeData.length > 0) {
+          const lat = parseFloat(geocodeData[0].lat);
+          const lon = parseFloat(geocodeData[0].lon);
+          console.log(`[Edge Scout] Resolved coordinates: lat=${lat}, lon=${lon}`);
+          
+          // Query Overpass for cafes and bakeries within 15km of target city coordinates
+          const query = `[out:json];(node[amenity=cafe](around:15000,${lat},${lon});node[amenity=bakery](around:15000,${lat},${lon}););out 10;`;
+          const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+          
+          const overpassRes = await fetch(overpassUrl);
+          const overpassData = await overpassRes.json();
+          const elements = overpassData.elements || [];
+          
+          scoutedElements = elements.map((el: any) => ({
+            business_name: el.tags.name || "Local Café",
+            business_type: el.tags.amenity === "cafe" ? "Specialty Café" : "Bakery",
+            address: `${el.tags['addr:street'] || ''} ${el.tags['addr:suburb'] || ''} ${targetLocation}`.trim(),
+            phone: el.tags.phone || el.tags['contact:phone'] || "Not Available",
+            email: el.tags.email || el.tags['contact:email'] || "Not Available",
+            website: el.tags.website || "Not Available"
+          })).filter((p: any) => p.business_name !== "Local Café");
+        }
+      } catch (scoutErr) {
+        console.error(`[Edge Scout] Overpass API query failed, using AI baseline:`, scoutErr);
+      }
+
+      // If Firecrawl Key is present, we could scrape websites for matches.
+      const firecrawlApiKey = Deno.env.get('FIRECRAWL_API_KEY') || "";
+      const scoutDataString = scoutedElements.length > 0 
+        ? JSON.stringify(scoutedElements.slice(0, 4))
+        : "No local coordinates found. Please suggest real existing targets from memory.";
+
       promptText = `
         You are a B2B sales prospector and lead finder.
-        The supplier's company details are: "${companyDetails || ''}"
-        They want to target prospects of type "${businessType || ''}" located in "${targetLocation || ''}".
-        Find 3 real, existing businesses in "${targetLocation || ''}" that match this criteria.
-        Output ONLY a valid JSON array of objects (no conversational text, no backticks, no wrapper other than the array).
+        Our company details are: "${companyDetails || ''}"
+        We want to find B2B clients of type "${businessType || ''}" in "${targetLocation || ''}".
+        
+        Here is a list of real-world business nodes retrieved from OpenStreetMap:
+        ${scoutDataString}
+        
+        Find 3 real, existing businesses in "${targetLocation || ''}" that match our target and output them.
+        Output ONLY a valid JSON array of objects (no markdown, no backticks, no wrapping other than the array).
         
         Required JSON format:
         [
@@ -173,19 +213,18 @@ serve(async (req) => {
             "phone": "Real Phone Number or 'Not Available'",
             "email": "Real Email Address or 'Not Available'",
             "website": "Real Website URL or 'Not Available'",
-            "interested_products": "Specific products they would buy from the user",
+            "interested_products": "Specific products they would buy from us",
             "current_supplier": "Likely supplier or 'Unknown'",
             "consumption": "Estimated monthly consumption volume (e.g. 300 liters or 20 cases)"
           }
         ]
         
         Absolute Rules:
-        - Never hallucinate contact details, phone numbers, or emails. If you cannot verify them, return 'Not Available'.
-        - Only return real, existing businesses in "${targetLocation || ''}".
+        - Never hallucinate contact details. If not available in OSM data or memory, return 'Not Available'.
+        - Only return real, existing businesses.
       `;
     }
 
-    // Get Gemini API Key from environment secrets
     const apiKey = Deno.env.get('GEMINI_API_KEY')
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'Gemini API Key is not configured on Supabase Secrets' }), {
@@ -194,7 +233,6 @@ serve(async (req) => {
       })
     }
 
-    // Invoke Google's Gemini API and measure latency
     const startTime = Date.now()
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
     const response = await fetch(geminiUrl, {
@@ -224,7 +262,6 @@ serve(async (req) => {
       throw new Error('Gemini API returned empty text response')
     }
 
-    // Log the generated output to public.ai_generations table
     const { error: logError } = await supabaseClient
       .from('ai_generations')
       .insert({
@@ -258,7 +295,6 @@ serve(async (req) => {
   } catch (err: any) {
     console.error('Edge Function Exception:', err)
     
-    // Log failure record to public.ai_generations table
     if (bodyJson.organizationId && bodyJson.leadId && authHeader) {
       try {
         const supabaseClient = createClient(
@@ -270,7 +306,7 @@ serve(async (req) => {
           .from('ai_generations')
           .insert({
             organization_id: bodyJson.organizationId,
-            lead_id: bodyJson.leadId,
+            lead_id: bodyJson.leadId || null,
             user_id: bodyJson.userId || null,
             prompt_type: bodyJson.promptType || 'unknown',
             provider: 'gemini',
