@@ -91,8 +91,13 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  // Define variables in scope for catch-block logging
+  let bodyJson: any = {}
+  let authHeader = ""
+  let promptText = ""
+
   try {
-    const authHeader = req.headers.get('Authorization')
+    authHeader = req.headers.get('Authorization') ?? ""
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing Authorization header' }), {
         status: 401,
@@ -100,7 +105,8 @@ serve(async (req) => {
       })
     }
 
-    const { leadId, promptType, organizationId, userId } = await req.json()
+    bodyJson = await req.json()
+    const { leadId, promptType, organizationId, userId } = bodyJson
     if (!leadId || !promptType || !organizationId) {
       return new Response(JSON.stringify({ error: 'Missing required body parameters (leadId, promptType, organizationId)' }), {
         status: 400,
@@ -147,9 +153,10 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
-    const promptText = promptTemplateFn(lead)
+    promptText = promptTemplateFn(lead)
 
-    // Invoke Google's Gemini API
+    // Invoke Google's Gemini API and measure latency
+    const startTime = Date.now()
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
     const response = await fetch(geminiUrl, {
       method: 'POST',
@@ -162,6 +169,7 @@ serve(async (req) => {
         }]
       })
     })
+    const latencyMs = Date.now() - startTime
 
     if (!response.ok) {
       const errText = await response.text()
@@ -171,6 +179,8 @@ serve(async (req) => {
 
     const resJson = await response.json()
     const resultText = resJson?.candidates?.[0]?.content?.parts?.[0]?.text
+    const tokensUsed = resJson?.usageMetadata?.totalTokenCount || null
+
     if (!resultText) {
       throw new Error('Gemini API returned empty text response')
     }
@@ -187,11 +197,14 @@ serve(async (req) => {
         model: 'gemini-1.5-flash',
         prompt: promptText,
         response: resultText,
+        status: 'completed',
+        tokens_used: tokensUsed,
+        latency_ms: latencyMs,
+        error_message: null
       })
 
     if (logError) {
       console.error('Failed to write generation details to log table:', logError)
-      // We don't fail the request if just the logger failed, to maintain user experience.
     }
 
     return new Response(JSON.stringify({
@@ -205,6 +218,34 @@ serve(async (req) => {
 
   } catch (err: any) {
     console.error('Edge Function Exception:', err)
+    
+    // Log failure record to public.ai_generations table
+    if (bodyJson.organizationId && bodyJson.leadId && authHeader) {
+      try {
+        const supabaseClient = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+          { global: { headers: { Authorization: authHeader } } }
+        )
+        await supabaseClient
+          .from('ai_generations')
+          .insert({
+            organization_id: bodyJson.organizationId,
+            lead_id: bodyJson.leadId,
+            user_id: bodyJson.userId || null,
+            prompt_type: bodyJson.promptType || 'unknown',
+            provider: 'gemini',
+            model: 'gemini-1.5-flash',
+            prompt: promptText || bodyJson.promptType || 'generation request',
+            response: '',
+            status: 'failed',
+            error_message: err.message || 'Unknown error'
+          })
+      } catch (logErr) {
+        console.error('Failed to log failure event to database:', logErr)
+      }
+    }
+
     return new Response(JSON.stringify({ error: err.message || 'Internal Server Error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

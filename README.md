@@ -126,6 +126,10 @@ create table if not exists public.ai_generations (
   model text not null,
   prompt text not null,
   response text not null,
+  status text default 'completed',
+  tokens_used integer,
+  latency_ms integer,
+  error_message text,
   created_at timestamptz default now()
 );
 
