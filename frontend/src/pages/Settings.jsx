@@ -185,32 +185,6 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
         </div>
       </div>
 
-      {/* Secure AI Config Setup */}
-      <div className="rounded-2xl border border-ink-100 dark:border-ink-800 bg-paper-50 dark:bg-ink-900 p-6 space-y-4">
-        <div className="flex items-center gap-2.5 pb-3 border-b border-ink-100 dark:border-ink-800">
-          <Sparkles size={18} className="text-gold-500" />
-          <h2 className="font-display font-bold text-base text-ink-900 dark:text-paper-100">
-            Secure AI Key Configuration
-          </h2>
-        </div>
-        <p className="text-xs text-ink-500 dark:text-ink-300 leading-relaxed">
-          BrewFlow AI follows production-ready security standards. API Keys are kept hidden server-side inside Deno Edge environment variables. The client browser only calls abstract service layers.
-        </p>
-        <div className="space-y-2">
-          <p className="text-xs font-semibold text-ink-700 dark:text-ink-200">How to configure your API key:</p>
-          <ol className="list-decimal list-inside space-y-1.5 text-xs text-ink-500 dark:text-ink-300">
-            <li>Run this command in your project terminal using Supabase CLI:</li>
-            <pre className="p-3.5 rounded-lg bg-ink-950 text-paper-100 text-[10px] sm:text-xs overflow-x-auto font-mono mt-1 border border-slate-800">
-              supabase secrets set GEMINI_API_KEY=your_gemini_api_key_here
-            </pre>
-            <li>Deploy the Edge Function to the Supabase cloud:</li>
-            <pre className="p-3.5 rounded-lg bg-ink-950 text-paper-100 text-[10px] sm:text-xs overflow-x-auto font-mono mt-1 border border-slate-800">
-              supabase functions deploy generate-sales-copy
-            </pre>
-          </ol>
-        </div>
-      </div>
-      
     </div>
   );
 }
