@@ -107,7 +107,14 @@ This ensures one company can never access another company's records.
 1. **Command Line:** Run the following command in your terminal using the Supabase CLI to overwrite the active secret:
    ```bash
    supabase secrets set GEMINI_API_KEY=your_new_gemini_api_key_here
-   ```
+   ```1. How to change your API key:
+To update or change your Gemini API key, run this command in your project terminal:
+
+bash
+
+
+supabase secrets set GEMINI_API_KEY=your_new_gemini_api_key_here
+Alternatively, you can go to your Supabase Online Project Dashboard under Project Settings -> API -> Secrets and modify the GEMINI_API_KEY entry. The Deno Edge Function will dynamically use the updated key on the very next generation request.
 2. **Dashboard online:** Navigate to your Supabase project dashboard -> *Project Settings* -> *API* -> *Secrets* and edit the `GEMINI_API_KEY` environment variable value.
 
 ### Can I add another AI Model Key?
