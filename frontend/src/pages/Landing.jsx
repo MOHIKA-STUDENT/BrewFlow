@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
-  Droplet,
   ArrowRight,
   Sun,
   Moon,
@@ -116,7 +115,7 @@ export default function Landing({ theme, onToggleTheme }) {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8.5 h-8.5 rounded-xl bg-[#d8a64c] flex items-center justify-center shadow-sm">
-              <Droplet size={18} className="text-[#14213d]" strokeWidth={2.5} />
+              <Coffee size={18} className="text-[#14213d]" strokeWidth={2.5} />
             </div>
             <span className="font-display font-bold text-lg tracking-tight text-[#14213d] dark:text-[#f9fafb]">
               BrewFlow <span className="text-[#d8a64c] font-mono text-xs font-bold">OS</span>
@@ -317,14 +316,21 @@ export default function Landing({ theme, onToggleTheme }) {
 
                 {/* 2. Floating Card A: Attio-style Lead Profile (Overlapping) */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 50, x: -10 }}
+                  initial={{ opacity: 0, y: 150, x: 20 }}
                   animate={{ 
                     opacity: 1, 
-                    y: 110, 
+                    y: [110, 98, 110], 
                     x: 20,
                     rotate: -1
                   }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
+                  transition={{ 
+                    y: {
+                      repeat: Infinity,
+                      duration: 5,
+                      ease: "easeInOut"
+                    },
+                    opacity: { duration: 0.8, delay: 0.2 }
+                  }}
                   className="absolute top-20 left-4 w-72 rounded-2xl bg-white/90 dark:bg-[#1f2937]/90 p-4 border border-[#14213d]/5 dark:border-white/10 shadow-xl backdrop-blur-lg"
                 >
                   <div className="flex items-start justify-between">
@@ -349,14 +355,21 @@ export default function Landing({ theme, onToggleTheme }) {
 
                 {/* 3. Floating Card B: AI Sales Assistant Draft Copy (Overlapping) */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 60, x: 20 }}
+                  initial={{ opacity: 0, y: 180, x: 180 }}
                   animate={{ 
                     opacity: 1, 
-                    y: 130, 
+                    y: [130, 142, 130], 
                     x: 180,
                     rotate: 1.5
                   }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
+                  transition={{ 
+                    y: {
+                      repeat: Infinity,
+                      duration: 6,
+                      ease: "easeInOut"
+                    },
+                    opacity: { duration: 0.8, delay: 0.4 }
+                  }}
                   className="absolute top-24 left-10 w-72 rounded-2xl bg-[#14213d]/95 p-4 border border-white/10 shadow-xl text-white backdrop-blur-lg"
                 >
                   <div className="flex items-center gap-1.5 pb-2 border-b border-white/5 mb-2">
@@ -416,11 +429,12 @@ export default function Landing({ theme, onToggleTheme }) {
             
             {/* Feature 1 */}
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer"
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
                 <Users size={18} />
@@ -435,11 +449,12 @@ export default function Landing({ theme, onToggleTheme }) {
 
             {/* Feature 2 */}
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer"
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
                 <CalendarClock size={18} />
@@ -454,11 +469,12 @@ export default function Landing({ theme, onToggleTheme }) {
 
             {/* Feature 3 */}
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer"
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
                 <Sparkles size={18} />
@@ -584,7 +600,14 @@ export default function Landing({ theme, onToggleTheme }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             
             {/* Starter Tier */}
-            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 shadow-sm"
+            >
               <div>
                 <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Starter</h3>
                 <p className="text-[11px] text-[#14213d]/50 dark:text-[#beb7a7]/50 mt-1">For solo suppliers & roasters</p>
@@ -606,10 +629,17 @@ export default function Landing({ theme, onToggleTheme }) {
               >
                 Get Started
               </Link>
-            </div>
+            </motion.div>
 
             {/* Roast Master Tier */}
-            <div className="rounded-2xl border-2 border-[#d8a64c] bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 relative">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="rounded-2xl border-2 border-[#d8a64c] bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 relative shadow-md"
+            >
               <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#d8a64c] text-white text-[9px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-widest">
                 Most Popular
               </span>
@@ -637,10 +667,17 @@ export default function Landing({ theme, onToggleTheme }) {
               >
                 Start Free Trial
               </Link>
-            </div>
+            </motion.div>
 
             {/* Enterprise Tier */}
-            <div className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 shadow-sm"
+            >
               <div>
                 <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Enterprise</h3>
                 <p className="text-[11px] text-[#14213d]/50 dark:text-[#beb7a7]/50 mt-1">For customized logistics workflows</p>
@@ -662,7 +699,7 @@ export default function Landing({ theme, onToggleTheme }) {
               >
                 Contact Sales
               </Link>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -714,7 +751,7 @@ export default function Landing({ theme, onToggleTheme }) {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <div className="w-8.5 h-8.5 rounded-xl bg-[#d8a64c] flex items-center justify-center">
-                  <Droplet size={18} className="text-[#14213d]" strokeWidth={2.5} />
+                  <Coffee size={18} className="text-[#14213d]" strokeWidth={2.5} />
                 </div>
                 <span className="font-display font-bold text-lg text-[#14213d] dark:text-[#f9fafb]">
                   BrewFlow

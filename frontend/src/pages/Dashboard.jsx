@@ -220,7 +220,7 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
             <div className="space-y-4">
               {/* Calculate dynamic percentages */}
               {[
-                { label: "New Leads", count: leads.filter((l) => l.status === "New").length },
+                { label: "New Leads", count: leads.filter((l) => l.status === "New Lead").length },
                 { label: "Contacted", count: contactedLeads },
                 { label: "Interested", count: leads.filter((l) => l.status === "Interested").length },
                 { label: "Sample Sent", count: sampleSentLeads },

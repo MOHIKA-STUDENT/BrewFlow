@@ -6,7 +6,7 @@ import {
   CalendarClock,
   Sparkles,
   Settings,
-  Droplet,
+  Coffee,
   LogOut,
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
@@ -28,7 +28,7 @@ export default function Sidebar({ onSignOut }) {
       {/* Brand mark */}
       <div className="flex items-center gap-3 px-6 h-16 border-b border-white/5">
         <div className="w-8 h-8 rounded-lg bg-[#d8a64c] flex items-center justify-center shadow-md">
-          <Droplet size={18} className="text-[#14213d]" strokeWidth={2.5} />
+          <Coffee size={18} className="text-[#14213d]" strokeWidth={2.5} />
         </div>
         <div className="flex flex-col">
           <span className="font-display font-bold text-sm tracking-tight text-[#f9fafb] leading-none">
@@ -73,7 +73,7 @@ export default function Sidebar({ onSignOut }) {
                   {label}
                 </span>
                 {isActive && (
-                  <span className="absolute right-3.5 w-1.5 h-1.5 rounded-full bg-[#d8a64c] relative z-10" />
+                  <span className="absolute right-3.5 w-1.5 h-1.5 rounded-full bg-[#d8a64c] z-10 animate-pulse" />
                 )}
               </>
             )}

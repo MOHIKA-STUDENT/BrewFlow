@@ -14,6 +14,11 @@ export default function Settings() {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+  // Deletion modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [confirmOrgName, setConfirmOrgName] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
   // Sync state with organization credentials
   useEffect(() => {
     if (organization) {
@@ -47,6 +52,39 @@ export default function Settings() {
       setError("Failed to update profile: " + err.message);
     } finally {
       setUpdating(false);
+    }
+  }
+
+  async function handleDeleteWorkspace() {
+    if (!organization) return;
+    if (confirmOrgName !== organization.name) {
+      setError("Verification name does not match the workspace name.");
+      return;
+    }
+    setDeleting(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      // 1. Delete generations
+      await supabase.from("ai_generations").delete().eq("organization_id", organization.id);
+      // 2. Delete activity timeline logs
+      await supabase.from("lead_activity").delete().eq("organization_id", organization.id);
+      // 3. Delete leads
+      await supabase.from("leads").delete().eq("organization_id", organization.id);
+      // 4. Delete the organization itself
+      const { error: deleteOrgError } = await supabase.from("organizations").delete().eq("id", organization.id);
+      
+      if (deleteOrgError) throw deleteOrgError;
+      
+      // Logout and redirect user to sign up
+      await supabase.auth.signOut();
+      window.location.href = "/signup";
+    } catch (err) {
+      console.error("Workspace deletion error:", err);
+      setError("Failed to delete workspace: " + err.message);
+      setDeleting(false);
+      setShowDeleteModal(false);
     }
   }
 
@@ -198,12 +236,67 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
         </p>
         <button
           type="button"
-          onClick={() => alert("Please contact support at founder@brewflow.ai to delete your enterprise organization.")}
+          onClick={() => {
+            setConfirmOrgName("");
+            setShowDeleteModal(true);
+          }}
           className="px-5 py-2.5 rounded-xl bg-[#e06656] text-white text-xs font-bold uppercase tracking-wider shadow hover:bg-red-700 transition-all cursor-pointer border-none"
         >
           Delete Workspace
         </button>
       </div>
+
+      {/* Delete Workspace Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#111827] border border-[#e06656]/20 rounded-2xl p-6 max-w-md w-full space-y-4.5 shadow-2xl">
+            <div className="flex items-center gap-2 text-[#e06656] pb-2 border-b border-[#e06656]/10">
+              <AlertTriangle size={18} />
+              <h3 className="font-display font-bold text-xs uppercase tracking-wider">
+                Confirm Workspace Deletion
+              </h3>
+            </div>
+            
+            <p className="text-xs text-[#14213d]/70 dark:text-[#beb7a7]/80 leading-relaxed font-light">
+              This action is <strong className="text-[#e06656] font-bold">permanent</strong> and will delete all B2B leads, customer metrics, outreach templates, and timelines scoped to the organization <strong className="font-bold text-[#14213d] dark:text-white">"{organization.name}"</strong>.
+            </p>
+
+            <div className="space-y-2">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                Type <span className="font-mono text-[#14213d] dark:text-white select-all">"{organization.name}"</span> to verify:
+              </p>
+              <input
+                type="text"
+                value={confirmOrgName}
+                onChange={(e) => setConfirmOrgName(e.target.value)}
+                placeholder="Workspace name..."
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-xs sm:text-sm outline-none focus:border-[#e06656] text-[#14213d] dark:text-[#f9fafb] font-sans"
+              />
+            </div>
+
+            <div className="flex gap-2.5 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setConfirmOrgName("");
+                }}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border border-[#14213d]/10 dark:border-white/10 hover:bg-[#14213d]/5 dark:hover:bg-white/5 text-slate-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteWorkspace}
+                disabled={deleting || confirmOrgName !== organization.name}
+                className="px-4.5 py-2.5 rounded-xl bg-[#e06656] text-white text-xs font-bold uppercase tracking-wider hover:bg-red-700 transition-all disabled:opacity-50 border-none cursor-pointer"
+              >
+                {deleting ? "Deleting Workspace..." : "Confirm Secure Deletion"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
     </div>
   );

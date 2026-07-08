@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Droplet } from "lucide-react";
+import { Coffee, ArrowLeft } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 
 export default function Signup() {
@@ -37,7 +37,7 @@ export default function Signup() {
         {/* Brand logo */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gold-500 flex items-center justify-center shadow-md">
-            <Droplet size={18} className="text-ink-950" strokeWidth={2.5} />
+            <Coffee size={18} className="text-ink-950" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
             <span className="font-display font-semibold text-sm tracking-tight text-white leading-none">
@@ -73,6 +73,11 @@ export default function Signup() {
       <div className="w-full md:w-1/2 flex items-center justify-center px-6 sm:px-12 py-12">
         <div className="w-full max-w-md space-y-6">
           <div className="rounded-2xl bg-white dark:bg-ink-900 border border-ink-100 dark:border-ink-800 p-8 shadow-xl space-y-6">
+            <div>
+              <Link to="/" className="inline-flex items-center gap-1 text-[9px] uppercase font-bold tracking-widest text-[#14213d]/50 dark:text-slate-400 hover:text-[#d8a64c] transition-colors mb-3 pb-2 border-b border-[#14213d]/5 dark:border-white/5 w-full">
+                <ArrowLeft size={10} /> <span>Back to Home</span>
+              </Link>
+            </div>
             <div className="space-y-1.5">
               <h2 className="font-display font-bold text-2xl text-ink-900 dark:text-paper-50 tracking-tight">
                 Create your workspace
