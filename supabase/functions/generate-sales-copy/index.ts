@@ -82,6 +82,44 @@ const PROMPT_TEMPLATES = {
     Guidelines:
     - Output exactly 3 bullet points.
     - Base actions on lead status and notes.
+  `,
+  prospect_research: (lead: any) => `
+    Generate a detailed prospect research report for our sales representative.
+    Company Name: ${lead.business_name}
+    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    Business Type: ${lead.business_type || 'Retailer'}
+    City: ${lead.city || 'their city'}
+    Interested Products: ${lead.interested_products || 'our wholesale catalog'}
+    Current Supplier: ${lead.current_supplier || 'unknown supplier'}
+    General Notes: ${lead.general_notes || ''}
+
+    Structure:
+    - Business Overview: Summary of what they do and their footprint in ${lead.city || 'their city'}.
+    - Key Pain Points: What issues they might have with their current supplier (${lead.current_supplier || 'unknown'}).
+    - Recommended Pitch Angle: How we should position our wholesale catalog and interested products (${lead.interested_products || 'our catalog'}) to win their business.
+  `,
+  competitor_analysis: (lead: any) => `
+    Generate a B2B competitor gap analysis comparing our brand against their current supplier.
+    Company Name: ${lead.business_name}
+    Interested Products: ${lead.interested_products || 'our wholesale catalog'}
+    Current Supplier: ${lead.current_supplier || 'unknown supplier'}
+    General Notes: ${lead.general_notes || ''}
+
+    Structure:
+    - Competitor Profile: Summary of their current supplier (${lead.current_supplier || 'unknown'}) and their strengths.
+    - Our Key Value Advantages: How we can beat them on quality, pricing margins, roasted-to-order scheduling, or delivery reliability for ${lead.interested_products || 'their needs'}.
+    - Objection Handling: Quick responses for the rep when the prospect says they are happy with their current supplier.
+  `,
+  followup_sequence: (lead: any) => `
+    Generate a 3-step multi-channel B2B follow-up sequence.
+    Company Name: ${lead.business_name}
+    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    Interested Products: ${lead.interested_products || 'wholesale supplies'}
+    
+    Structure:
+    - Step 1 (Day 1 - WhatsApp Outreach): Under 50 words, casual and friendly, checking if their wholesale sample pack arrived.
+    - Step 2 (Day 4 - Email Follow-up): Under 120 words, professional, proposing a custom volume pricing tier.
+    - Step 3 (Day 7 - Phone Call Script): Under 60 words, quick checklist for the sales rep to check in.
   `
 }
 
@@ -94,7 +132,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
 
   // 1. OpenRouter (Check first since keys start with sk-or-v1-)
   if (cleanKey.startsWith("sk-or-v1-")) {
-    console.log("[Universal AI] Routing to OpenRouter Llama-3 Free...");
+    console.log("[Universal AI] Routing to OpenRouter Llama-3.3 Free...");
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -104,7 +142,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
         "X-Title": "BrewFlow AI"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3-8b-instruct:free",
+        model: "meta-llama/llama-3.3-70b-instruct:free",
         messages: [{ role: "user", content: promptText }]
       })
     });
@@ -115,7 +153,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
     return {
       text: data.choices?.[0]?.message?.content || "",
       provider: "OpenRouter",
-      model: "llama-3-8b-free"
+      model: "llama-3.3-70b-free"
     };
   }
 
