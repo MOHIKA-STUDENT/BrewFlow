@@ -264,7 +264,7 @@ export const AIService = {
     } catch (err) {
       console.warn(`[AIService] Dynamic prospect scout failed. Triggering local verified fallback registry:`, err.message);
       
-      // Fallback search in local pre-verified database
+      // Fallback search in local pre-verified database (supporting both Indian and global firms)
       const VERIFIED_DIRECTORY = [
         {
           business_name: "Blue Tokai Coffee Roasters",
@@ -337,6 +337,62 @@ export const AIService = {
           type_key: "ice cream"
         },
         {
+          business_name: "Subko Coffee Roasters",
+          business_type: "Specialty Café",
+          city: "Mumbai, India",
+          address: "Mary Lodge, Chapel Rd, Ranwar, Bandra West, Mumbai, MH 400050",
+          phone: "+91 90047 00050",
+          email: "procure@subko.coffee",
+          website: "https://www.subko.coffee",
+          interested_products: "Oat Milk, Specialty Espresso Beans",
+          current_supplier: "Local Dairy",
+          consumption: "800 liters/month",
+          city_key: "mumbai",
+          type_key: "cafe"
+        },
+        {
+          business_name: "Le Plaisir",
+          business_type: "Bakery & Café",
+          city: "Pune, India",
+          address: "Bhandarkar Rd, Deccan Gymkhana, Pune, MH 411004",
+          phone: "+91 20 2568 2253",
+          email: "orders@leplaisir.in",
+          website: "https://leplaisir.in",
+          interested_products: "Premium Butter, Fresh Cream, Oat Milk",
+          current_supplier: "Amul Direct",
+          consumption: "1400 liters/month",
+          city_key: "pune",
+          type_key: "bakery"
+        },
+        {
+          business_name: "German Bakery",
+          business_type: "Bakery & Café",
+          city: "Pune, India",
+          address: "Koregaon Park Rd, Pune, MH 411001",
+          phone: "+91 20 2615 6554",
+          email: "contact@germanbakery.co.in",
+          website: "https://germanbakery.co.in",
+          interested_products: "B2B Oat Milk, Whole Milk alternative",
+          current_supplier: "Gokul Dairy",
+          consumption: "1800 liters/month",
+          city_key: "pune",
+          type_key: "bakery"
+        },
+        {
+          business_name: "Roastery Coffee House",
+          business_type: "Specialty Café",
+          city: "Hyderabad, India",
+          address: "Road No. 14, Banjara Hills, Hyderabad, TS 500034",
+          phone: "+91 40 2355 4848",
+          email: "procurement@roasterycoffee.com",
+          website: "https://roasterycoffee.com",
+          interested_products: "Barista Oat Milk, Milk alternative, Custom roast",
+          current_supplier: "Sysco",
+          consumption: "1000 liters/month",
+          city_key: "hyderabad",
+          type_key: "cafe"
+        },
+        {
           business_name: "Zoho Corporation",
           business_type: "Software Office",
           city: "Chennai, India",
@@ -383,9 +439,26 @@ export const AIService = {
       const searchLocation = targetLocation?.toLowerCase() || "";
       const searchType = businessType?.toLowerCase() || "";
 
+      // Normalize search terms: E.g., strip ending "s" to match "cafe" with "cafes"
+      let searchTypeNormalized = searchType.trim();
+      if (searchTypeNormalized.endsWith("s") && searchTypeNormalized.length > 3) {
+        searchTypeNormalized = searchTypeNormalized.substring(0, searchTypeNormalized.length - 1);
+      }
+
       const matches = VERIFIED_DIRECTORY.filter(item => {
-        const locMatch = !searchLocation || item.city_key.includes(searchLocation) || item.city.toLowerCase().includes(searchLocation);
-        const typeMatch = !searchType || item.type_key.includes(searchType) || item.business_type.toLowerCase().includes(searchType);
+        // Location Match check
+        const locMatch = !searchLocation || 
+          item.city_key.includes(searchLocation) || 
+          item.city.toLowerCase().includes(searchLocation) ||
+          searchLocation.includes(item.city_key);
+        
+        // Type / Keyword Match check: checks both ways (e.g. "cafe" in "cafes" or "cafes" in "specialty café")
+        const typeMatch = !searchTypeNormalized || 
+          item.type_key.toLowerCase().includes(searchTypeNormalized) || 
+          searchTypeNormalized.includes(item.type_key.toLowerCase()) ||
+          item.business_type.toLowerCase().includes(searchTypeNormalized) ||
+          searchTypeNormalized.includes(item.business_type.toLowerCase());
+
         return locMatch && typeMatch;
       });
 
