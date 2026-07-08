@@ -12,12 +12,14 @@ import Signup from "./pages/Signup";
 import CheckEmail from "./pages/CheckEmail";
 import Landing from "./pages/Landing";
 import LeadDetail from "./pages/LeadDetail";
+import LeadScout from "./pages/LeadScout";
 import { AuthProvider, useAuth } from "./lib/AuthContext";
 import { getInitialTheme, applyTheme } from "./lib/theme";
 
 const TITLES = {
   "/dashboard": "Dashboard",
   "/leads": "Leads",
+  "/scout": "Lead Scout",
   "/follow-ups": "Follow-ups",
   "/ai-assistant": "AI Assistant",
   "/settings": "Settings",
@@ -81,6 +83,7 @@ function AppShell({ theme, setTheme }) {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/leads" element={<Leads />} />
             <Route path="/leads/:id" element={<LeadDetail />} />
+            <Route path="/scout" element={<LeadScout />} />
             <Route path="/follow-ups" element={<FollowUps />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
             <Route path="/settings" element={<Settings />} />

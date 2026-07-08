@@ -9,12 +9,14 @@ import {
   Coffee,
   LogOut,
   X,
+  Compass,
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/leads", label: "Leads", icon: Users },
+  { to: "/scout", label: "Lead Scout", icon: Compass },
   { to: "/follow-ups", label: "Follow-ups", icon: CalendarClock },
   { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
   { to: "/settings", label: "Settings", icon: Settings },
