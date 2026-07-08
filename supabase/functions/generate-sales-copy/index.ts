@@ -132,7 +132,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
 
   // 1. OpenRouter (Check first since keys start with sk-or-v1-)
   if (cleanKey.startsWith("sk-or-v1-")) {
-    console.log("[Universal AI] Routing to OpenRouter Free Router...");
+    console.log("[Universal AI] Routing to OpenRouter Llama-3.2 3B Free...");
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -142,7 +142,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
         "X-Title": "BrewFlow AI"
       },
       body: JSON.stringify({
-        model: "openrouter/free",
+        model: "meta-llama/llama-3.2-3b-instruct:free",
         messages: [{ role: "user", content: promptText }]
       })
     });
@@ -153,7 +153,7 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
     return {
       text: data.choices?.[0]?.message?.content || "",
       provider: "OpenRouter",
-      model: "openrouter-free-router"
+      model: "llama-3.2-3b-free"
     };
   }
 
