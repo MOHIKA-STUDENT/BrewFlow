@@ -5,9 +5,9 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-ink-950: #0b1120; /* Dark Mode Background: midnight/deep dark blue */
-  --color-ink-900: #111827; /* Dark Mode Cards: slate-900 */
-  --color-ink-800: #1f2937; /* Dark Mode Borders: slate-800 */
+  --color-ink-950: #080d1a; /* Dark Mode Background: Soft ambient midnight navy */
+  --color-ink-900: #0e1528; /* Dark Mode Cards: Rich slate-navy */
+  --color-ink-800: #1c253d; /* Dark Mode Borders: Muted navy-border */
   --color-ink-700: #374151; /* Dark Mode Secondary text */
   --color-ink-500: #6b7280; /* Grey intermediate */
   --color-ink-300: #9ca3af; /* Light Grey placeholder */

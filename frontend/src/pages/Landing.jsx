@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Sun,
@@ -18,7 +18,9 @@ import {
   ChevronUp,
   MessageSquare,
   BarChart3,
-  ShieldAlert
+  ShieldAlert,
+  Menu,
+  X
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 
@@ -36,6 +38,9 @@ export default function Landing({ theme, onToggleTheme }) {
 
   // Mouse Parallax coordinates
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+
+  // Mobile navigation menu toggle state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // SEO setup
@@ -107,11 +112,11 @@ export default function Landing({ theme, onToggleTheme }) {
   return (
     <div 
       onMouseMove={handleMouseMove}
-      className="min-h-screen bg-[#f7f5ef] dark:bg-[#0b1120] text-[#14213d] dark:text-[#f9fafb] font-body selection:bg-[#d8a64c] selection:text-white transition-colors duration-300"
+      className="min-h-screen bg-[#f7f5ef] dark:bg-ink-950 text-[#14213d] dark:text-[#f9fafb] font-body selection:bg-[#d8a64c] selection:text-white transition-colors duration-300"
     >
       
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-[#f7f5ef]/80 dark:bg-[#0b1120]/80 border-b border-[#14213d]/5 dark:border-white/5 transition-all">
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-[#f7f5ef]/80 dark:bg-ink-950/80 border-b border-[#14213d]/5 dark:border-white/5 transition-all">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8.5 h-8.5 rounded-xl bg-[#d8a64c] flex items-center justify-center shadow-sm">
@@ -141,7 +146,7 @@ export default function Landing({ theme, onToggleTheme }) {
             {session ? (
               <Link
                 to="/dashboard"
-                className="px-4.5 py-2.5 rounded-xl bg-[#d8a64c] hover:bg-[#c19036] text-white text-xs font-bold shadow-sm transition-all hover:scale-[1.03] uppercase tracking-wider"
+                className="hidden sm:inline-block px-4.5 py-2.5 rounded-xl bg-[#d8a64c] hover:bg-[#c19036] text-white text-xs font-bold shadow-sm transition-all hover:scale-[1.03] uppercase tracking-wider text-center"
               >
                 Go to Workspace
               </Link>
@@ -155,15 +160,69 @@ export default function Landing({ theme, onToggleTheme }) {
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-4.5 py-2.5 rounded-xl bg-[#14213d] dark:bg-[#d8a64c] text-white dark:text-[#14213d] text-xs font-bold shadow-sm transition-all hover:scale-[1.03] uppercase tracking-wider"
+                  className="hidden sm:inline-block px-4.5 py-2.5 rounded-xl bg-[#14213d] dark:bg-[#d8a64c] text-white dark:text-[#14213d] text-xs font-bold shadow-sm transition-all hover:scale-[1.03] uppercase tracking-wider text-center"
                 >
                   Start Free
                 </Link>
               </>
             )}
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2.5 rounded-xl border border-[#14213d]/10 dark:border-white/10 text-[#14213d] dark:text-[#beb7a7] hover:bg-[#14213d]/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <X size={15} /> : <Menu size={15} />}
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu Panel */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-b border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/95 dark:bg-[#080d1a]/95 backdrop-blur-lg overflow-hidden relative z-40"
+          >
+            <div className="px-6 py-6 space-y-4 text-xs font-bold uppercase tracking-wider text-center flex flex-col items-center">
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="py-2.5 text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:text-[#d8a64c] transition-colors w-full border-b border-[#14213d]/5 dark:border-white/5">Features</a>
+              <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="py-2.5 text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:text-[#d8a64c] transition-colors w-full border-b border-[#14213d]/5 dark:border-white/5">Product Tour</a>
+              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="py-2.5 text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:text-[#d8a64c] transition-colors w-full border-b border-[#14213d]/5 dark:border-white/5">Pricing</a>
+              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="py-2.5 text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:text-[#d8a64c] transition-colors w-full border-b border-[#14213d]/5 dark:border-white/5">FAQ</a>
+              
+              {session ? (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-3 rounded-xl bg-[#d8a64c] hover:bg-[#c19036] text-white font-bold text-center shadow-md block transition-all"
+                >
+                  Go to Workspace
+                </Link>
+              ) : (
+                <div className="flex flex-col gap-2 w-full pt-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-3 text-center border border-[#14213d]/15 dark:border-white/10 rounded-xl text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:text-[#d8a64c]"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-3 text-center rounded-xl bg-[#14213d] dark:bg-[#d8a64c] text-white dark:text-[#14213d] font-bold shadow-md block transition-all"
+                  >
+                    Start Free
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 2. Hero Section */}
       <section className="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden">
@@ -290,19 +349,19 @@ export default function Landing({ theme, onToggleTheme }) {
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-[#0b1120]/40 border border-[#14213d]/5">
+                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-ink-950/40 border border-[#14213d]/5">
                       <p className="text-[9px] font-bold text-[#14213d]/50 dark:text-[#beb7a7]/50 uppercase">Active Leads</p>
                       <p className="text-lg font-mono font-bold text-[#14213d] dark:text-[#f9fafb] mt-0.5">
                         {metrics.totalLeads}
                       </p>
                     </div>
-                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-[#0b1120]/40 border border-[#14213d]/5">
+                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-ink-950/40 border border-[#14213d]/5">
                       <p className="text-[9px] font-bold text-[#14213d]/50 dark:text-[#beb7a7]/50 uppercase">Samples Sent</p>
                       <p className="text-lg font-mono font-bold text-[#14213d] dark:text-[#f9fafb] mt-0.5">
                         {metrics.samplesSent}
                       </p>
                     </div>
-                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-[#0b1120]/40 border border-[#14213d]/5">
+                    <div className="p-3 rounded-xl bg-[#f7f5ef]/50 dark:bg-ink-950/40 border border-[#14213d]/5">
                       <p className="text-[9px] font-bold text-[#14213d]/50 dark:text-[#beb7a7]/50 uppercase">Customers</p>
                       <p className="text-lg font-mono font-bold text-[#5b7553] mt-0.5">
                         {metrics.customers}
@@ -396,7 +455,7 @@ export default function Landing({ theme, onToggleTheme }) {
                         className={`px-2 py-0.5 rounded text-[8px] font-bold transition-all border-none cursor-pointer ${
                           mockLeadStatus === status
                             ? "bg-[#d8a64c] text-white"
-                            : "bg-[#f7f5ef] dark:bg-[#0b1120] text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:bg-[#14213d]/5"
+                            : "bg-[#f7f5ef] dark:bg-ink-950 text-[#14213d]/60 dark:text-[#beb7a7]/65 hover:bg-[#14213d]/5"
                         }`}
                       >
                         {status === "Sample Sent" ? "Sample" : status === "Customer" ? "Won" : status}
@@ -434,7 +493,7 @@ export default function Landing({ theme, onToggleTheme }) {
               viewport={{ once: true, margin: "-50px" }}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-ink-950/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
                 <Users size={18} />
@@ -454,7 +513,7 @@ export default function Landing({ theme, onToggleTheme }) {
               viewport={{ once: true, margin: "-50px" }}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-ink-950/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
                 <CalendarClock size={18} />
@@ -474,7 +533,7 @@ export default function Landing({ theme, onToggleTheme }) {
               viewport={{ once: true, margin: "-50px" }}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
+              className="p-6 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-ink-950/40 space-y-4 hover:border-[#d8a64c]/40 transition-colors group cursor-pointer shadow-sm"
             >
               <div className="w-10 h-10 rounded-xl bg-[#d8a64c]/10 text-[#d8a64c] flex items-center justify-center group-hover:bg-[#d8a64c] group-hover:text-white transition-colors">
                 <Sparkles size={18} />
@@ -606,7 +665,7 @@ export default function Landing({ theme, onToggleTheme }) {
               viewport={{ once: true, margin: "-50px" }}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 shadow-sm"
+              className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-ink-950/40 p-6 flex flex-col justify-between space-y-8 shadow-sm"
             >
               <div>
                 <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Starter</h3>
@@ -638,7 +697,7 @@ export default function Landing({ theme, onToggleTheme }) {
               viewport={{ once: true, margin: "-50px" }}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="rounded-2xl border-2 border-[#d8a64c] bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 relative shadow-md"
+              className="rounded-2xl border-2 border-[#d8a64c] bg-[#f7f5ef]/40 dark:bg-ink-950/40 p-6 flex flex-col justify-between space-y-8 relative shadow-md"
             >
               <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#d8a64c] text-white text-[9px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-widest">
                 Most Popular
@@ -676,7 +735,7 @@ export default function Landing({ theme, onToggleTheme }) {
               viewport={{ once: true, margin: "-50px" }}
               whileHover={{ y: -6, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-[#0b1120]/40 p-6 flex flex-col justify-between space-y-8 shadow-sm"
+              className="rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/40 dark:bg-ink-950/40 p-6 flex flex-col justify-between space-y-8 shadow-sm"
             >
               <div>
                 <h3 className="font-display font-bold text-base text-[#14213d] dark:text-[#f9fafb] uppercase tracking-wider">Enterprise</h3>
@@ -745,7 +804,7 @@ export default function Landing({ theme, onToggleTheme }) {
       </section>
 
       {/* 7. Footer */}
-      <footer className="border-t border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef] dark:bg-[#0b1120] py-16 transition-colors">
+      <footer className="border-t border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef] dark:bg-ink-950 py-16 transition-colors">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
             <div className="space-y-4">

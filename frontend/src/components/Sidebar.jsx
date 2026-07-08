@@ -8,6 +8,7 @@ import {
   Settings,
   Coffee,
   LogOut,
+  X,
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 
@@ -19,34 +20,46 @@ const NAV_ITEMS = [
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
-export default function Sidebar({ onSignOut }) {
+export default function Sidebar({ onSignOut, onClose }) {
   const { user, organization } = useAuth();
 
   return (
-    <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r border-[#14213d]/10 bg-[#14213d] text-white">
+    <aside className="flex h-full w-full flex-col bg-[#14213d] text-white">
       
       {/* Brand mark */}
-      <div className="flex items-center gap-3 px-6 h-16 border-b border-white/5">
-        <div className="w-8 h-8 rounded-lg bg-[#d8a64c] flex items-center justify-center shadow-md">
-          <Coffee size={18} className="text-[#14213d]" strokeWidth={2.5} />
+      <div className="flex items-center justify-between px-6 h-16 border-b border-white/5 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#d8a64c] flex items-center justify-center shadow-md">
+            <Coffee size={18} className="text-[#14213d]" strokeWidth={2.5} />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-display font-bold text-sm tracking-tight text-[#f9fafb] leading-none">
+              BrewFlow
+            </span>
+            <span className="text-[9px] font-mono tracking-widest text-[#d8a64c] uppercase mt-0.5 font-bold">
+              Sales OS
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <span className="font-display font-bold text-sm tracking-tight text-[#f9fafb] leading-none">
-            BrewFlow
-          </span>
-          <span className="text-[9px] font-mono tracking-widest text-[#d8a64c] uppercase mt-0.5 font-bold">
-            Sales OS
-          </span>
-        </div>
+        {onClose && (
+          <button 
+            onClick={onClose} 
+            className="md:hidden p-1.5 rounded-lg hover:bg-white/5 text-[#beb7a7] hover:text-white cursor-pointer border-none bg-transparent"
+            title="Close navigation"
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links with Framer Motion slide indicators */}
-      <nav className="flex-1 px-3 py-6 space-y-1.5">
+      <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
+            onClick={onClose}
             className="relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
           >
             {({ isActive }) => (

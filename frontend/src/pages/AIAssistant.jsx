@@ -21,6 +21,7 @@ import { useAuth } from "../lib/AuthContext";
 import { getLeads, getLead } from "../lib/leadsApi";
 import { AIService, PROMPT_TYPES } from "../lib/aiService";
 import { supabase } from "../lib/supabaseClient";
+import CustomSelect from "../components/CustomSelect";
 
 const ICON_MAP = {
   Mail,
@@ -287,18 +288,15 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
             <label className="text-[10px] font-bold text-[#14213d]/50 dark:text-slate-400 uppercase tracking-widest block">
               Lead Target Sourcing Selection
             </label>
-            <select
-              value={selectedLeadId}
-              onChange={(e) => setSelectedLeadId(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-[#14213d]/5 dark:border-white/5 bg-[#f8f7f4] dark:bg-[#111827]/40 text-xs font-bold outline-none focus:border-[#d8a64c] focus:ring-1 focus:ring-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all cursor-pointer shadow-inner"
-            >
-              <option value="">-- Pick B2B Customer Lead --</option>
-              {leads.map((lead) => (
-                <option key={lead.id} value={lead.id}>
-                  {lead.business_name} ({lead.contact_person || "No Contact"})
-                </option>
-              ))}
-            </select>
+            <CustomSelect
+              value={leads.find((l) => l.id === selectedLeadId)?.business_name || ""}
+              onChange={(val) => setSelectedLeadId(val)}
+              options={leads.map((lead) => ({
+                value: lead.id,
+                label: `${lead.business_name} (${lead.contact_person || "No Contact"})`,
+              }))}
+              buttonClassName="py-3 px-4 shadow-inner"
+            />
           </div>
 
           <button

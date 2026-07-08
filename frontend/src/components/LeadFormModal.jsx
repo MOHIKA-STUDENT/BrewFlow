@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import CustomSelect from "./CustomSelect";
 
 const STATUS_OPTIONS = ["New Lead", "Contacted", "Interested", "Sample Sent", "Negotiation", "Customer", "Lost"];
 
@@ -81,15 +82,11 @@ export default function LeadFormModal({ initialLead, onSubmit, onClose }) {
             <Field label="Business Type" value={form.business_type} onChange={(v) => set("business_type", v)} placeholder="Café, Restaurant..." />
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-ink-900 dark:text-paper-200 block">Status</label>
-              <select
+              <CustomSelect
                 value={form.status}
-                onChange={(e) => set("status", e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-ink-100 dark:border-ink-800 bg-[#f8f7f4] dark:bg-ink-950/40 text-sm outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500 text-ink-900 dark:text-paper-100 transition-all cursor-pointer"
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+                onChange={(v) => set("status", v)}
+                options={STATUS_OPTIONS}
+              />
             </div>
           </Row>
 

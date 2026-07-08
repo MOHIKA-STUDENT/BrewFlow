@@ -45,15 +45,36 @@ function ProtectedRoute({ children }) {
 function AppShell({ theme, setTheme }) {
   const location = useLocation();
   const { signOut } = useAuth();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-paper-100 dark:bg-ink-950">
-      <Sidebar onSignOut={signOut} />
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r border-[#14213d]/10 dark:border-white/5">
+        <Sidebar onSignOut={signOut} />
+      </div>
+
+      {/* Mobile Sidebar Drawer Overlay */}
+      {mobileNavOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/60 md:hidden backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+          onClick={() => setMobileNavOpen(false)}
+        >
+          <div 
+            className="fixed inset-y-0 left-0 w-64 bg-[#14213d] text-white shadow-2xl flex flex-col z-50 animate-in slide-in-from-left duration-250"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Sidebar onSignOut={signOut} onClose={() => setMobileNavOpen(false)} />
+          </div>
+        </div>
+      )}
+
       <div className="md:pl-64">
         <Topbar
           title={TITLES[location.pathname] ?? "BrewFlow"}
           theme={theme}
           onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+          onOpenMobileNav={() => setMobileNavOpen(true)}
         />
         <main className="p-4 md:p-8">
           <Routes>

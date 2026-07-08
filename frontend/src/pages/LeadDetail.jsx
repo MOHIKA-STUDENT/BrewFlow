@@ -23,6 +23,7 @@ import {
 import { useAuth } from "../lib/AuthContext";
 import { getLead, updateLead, softDeleteLead, getLeadActivity, logActivity } from "../lib/leadsApi";
 import StatusPill from "../components/StatusPill";
+import CustomSelect from "../components/CustomSelect";
 
 const STATUS_OPTIONS = ["New Lead", "Contacted", "Interested", "Sample Sent", "Negotiation", "Customer", "Lost"];
 
@@ -223,17 +224,14 @@ export default function LeadDetail() {
 
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Quick status select */}
-          <div className="flex items-center gap-1.5 bg-[#f8f7f4] dark:bg-[#111827] border border-[#14213d]/5 dark:border-white/10 rounded-xl px-3.5 py-2 shadow-inner">
-            <span className="text-[9px] uppercase font-mono tracking-wider text-slate-400 font-bold">Status</span>
-            <select
+          <div className="flex items-center gap-1.5 bg-[#f8f7f4] dark:bg-[#111827] border border-[#14213d]/5 dark:border-white/10 rounded-xl px-2.5 py-1 shadow-inner">
+            <span className="text-[9px] uppercase font-mono tracking-wider text-slate-400 font-bold ml-1">Status</span>
+            <CustomSelect
               value={lead.status}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              className="bg-transparent border-none text-xs font-bold outline-none text-[#14213d] dark:text-[#f9fafb] cursor-pointer pr-1"
-            >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+              onChange={(val) => handleStatusChange(val)}
+              options={STATUS_OPTIONS}
+              buttonClassName="border-none bg-transparent shadow-none py-1 px-1.5 font-bold"
+            />
           </div>
 
           <button

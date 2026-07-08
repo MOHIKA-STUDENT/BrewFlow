@@ -266,7 +266,7 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
             ) : (
               <ul className="space-y-3.5">
                 {recentAi.map((gen) => (
-                  <li key={gen.id} className="text-xs space-y-1 p-2 rounded-lg bg-[#f7f5ef]/40 dark:bg-[#0b1120]/20 border border-[#14213d]/5">
+                  <li key={gen.id} className="text-xs space-y-1 p-2 rounded-lg bg-[#f7f5ef]/40 dark:bg-ink-950/20 border border-[#14213d]/5">
                     <div className="flex items-center justify-between text-[10px] font-bold">
                       <span className="text-[#d8a64c] uppercase tracking-wider">{gen.prompt_type.replace("_", " ")}</span>
                       <span className="font-mono text-[#14213d]/40 dark:text-[#beb7a7]/40">

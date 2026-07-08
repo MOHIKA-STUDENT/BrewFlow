@@ -20,7 +20,7 @@ export default function Topbar({ title, theme, onToggleTheme, onOpenMobileNav })
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between h-16 px-6 md:px-8 border-b border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/80 dark:bg-[#0b1120]/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 flex items-center justify-between h-16 px-6 md:px-8 border-b border-[#14213d]/5 dark:border-white/5 bg-[#f7f5ef]/80 dark:bg-ink-950/80 backdrop-blur-md">
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileNav}
