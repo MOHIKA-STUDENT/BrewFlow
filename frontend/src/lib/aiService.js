@@ -15,42 +15,43 @@ export const PROMPT_TYPES = [
   { id: "followup_sequence", label: "Follow-up Sequence", icon: "FileClock", desc: "3-step multi-channel follow-up plan." }
 ];
 
-function localFallbackGenerator(lead, promptType) {
+function localFallbackGenerator(lead, promptType, companyDetails) {
   const businessName = lead.business_name || "your business";
   const contactPerson = lead.contact_person || "Purchasing Manager";
   const city = lead.city || "your area";
   const products = lead.interested_products || "our wholesale products";
   const supplier = lead.current_supplier || "your current supplier";
+  const brand = companyDetails ? `${companyDetails}` : "our wholesale brand";
 
   switch (promptType) {
     case "cold_email":
-      return `Subject: Partnership Proposal: Premium wholesale supplies for ${businessName}
+      return `Subject: Partnership Proposal: Sourcing for ${businessName}
 
 Hi ${contactPerson},
 
 I hope you are doing well.
 
-I recently came across ${businessName} in ${city} and noticed your excellent B2B footprint. Since you are sourcing physical goods for your category, I wanted to reach out regarding our premium catalog.
+I recently came across ${businessName} in ${city} and wanted to reach out on behalf of ${brand}.
 
-Compared to standard distributors, we offer certified quality grades, faster logistics cycles, and competitive bulk pricing on items like ${products}. Many businesses transition to our model to improve product consistency and drive down operational margins.
+Since you are sourcing wholesale products, I wanted to share our premium B2B catalog. We offer high-quality items like ${products} and are confident we can help improve your supply consistency and lower your costs compared to sourcing from ${supplier}.
 
-Would you be open to a brief call next Tuesday to discuss sending a free sample package to your team?
+Would you be open to a brief call next week to discuss sending a free sample package to your team?
 
 Best regards,
 
 [Sales Rep Name]
-BrewFlow Partner Team`;
+${brand}`;
 
     case "whatsapp_followup":
-      return `Hi ${contactPerson}! 👋 This is the partner team reaching out. We wanted to see if you had a brief moment to check out our wholesale price list for ${products}. Hope you are having a productive week at ${businessName}! Let me know if we can ship a free sample box to your location in ${city}.`;
+      return `Hi ${contactPerson}! 👋 This is the team at ${brand} reaching out. We wanted to see if you had a brief moment to check out our wholesale price list for ${products}. Hope you are having a productive week at ${businessName}! Let me know if we can ship a free sample box to your location in ${city}.`;
 
     case "call_script":
       return `[SALES REP COLD CALL OPENER]
 
-Rep: "Hi ${contactPerson}, this is [Your Name] from BrewFlow wholesale. How are you doing today?"
+Rep: "Hi ${contactPerson}, this is [Your Name] from ${brand}. How are you doing today?"
 (Wait for greeting)
 
-Rep: "Great! I notice you manage procurement at ${businessName} in ${city}. I wanted to reach out briefly because we supply high-grade B2B products (like ${products}) to physical brands in your area. 
+Rep: "Great! I notice you manage procurement at ${businessName} in ${city}. I wanted to reach out briefly because we supply high-grade B2B products (like ${products}) in your area. 
 
 I know you are currently working with ${supplier}, but we've been helping similar businesses reduce supply margins by 15% while improving delivery reliability. 
 
@@ -61,24 +62,24 @@ If I promise to keep it under 30 seconds, would it be alright to email over our 
 Date: ${new Date().toLocaleDateString()}
 
 Key Discussion Points:
-- Reviewed current supply catalog and verified interest in ${products}.
+- Reviewed current supply catalog and verified interest in our products (${products}) from ${brand}.
 - Identified margin pain points with their active supplier (${supplier}).
 - Noted follow-up requirements for regional delivery options in ${city}.
 
 Action Items:
-1. Ship sample catalog to ${contactPerson}.
+1. Ship sample catalog from ${brand} to ${contactPerson}.
 2. Confirm volume pricing tier for ${products}.
 3. Scheduled next follow-up.`;
 
     case "lead_summary":
       return `LEAD BRIEFING: ${businessName}
 This is a ${lead.business_type || "B2B client"} lead located in ${city}. The primary contact is ${contactPerson} (${lead.job_title || "Procurement Manager"}). 
-Opportunities: High interest in ${products}. Estimated monthly revenue value is ${lead.potential_monthly_revenue ? `$${Number(lead.potential_monthly_revenue).toLocaleString()}` : "to be determined"}. They currently source from ${supplier}. Recent notes specify: "${lead.general_notes || "No general notes logged."}"`;
+Opportunities: High interest in our offering (${products}) from ${brand}. Estimated monthly revenue value is ${lead.potential_monthly_revenue ? `$${Number(lead.potential_monthly_revenue).toLocaleString()}` : "to be determined"}. They currently source from ${supplier}. Recent notes specify: "${lead.general_notes || "No general notes logged."}"`;
 
     case "next_best_action":
       return `RECOMMENDED ACTIONS FOR ${businessName}:
-1. Outbound Follow-up: Dispatch a WhatsApp ping to ${contactPerson} regarding sample confirmation.
-2. Competitive Analysis: Draft custom wholesale quote comparing pricing against ${supplier}.
+1. Outbound Follow-up: Dispatch a WhatsApp ping to ${contactPerson} on behalf of ${brand} regarding sample confirmation.
+2. Competitive Analysis: Draft custom wholesale quote comparing pricing from ${brand} against ${supplier}.
 3. Sales Call: Schedule follow-up discussion to address logistics and lead times.`;
 
     case "prospect_research":
@@ -86,19 +87,19 @@ Opportunities: High interest in ${products}. Estimated monthly revenue value is 
 - Company Name: ${businessName}
 - Main Focus: Sourcing B2B wholesale ${products} in ${city}.
 - Current Sourcing: Sourced from ${supplier}.
-- Key Actions Recommended: Review catalog alignment and pitch direct custom roast volume pricing.`;
+- Key Actions Recommended: Review catalog alignment with ${brand} and pitch direct custom roast volume pricing.`;
 
     case "competitor_analysis":
       return `COMPETITOR GAP ANALYSIS:
 - Active Competitor: ${supplier}
 - Core Strengths: Established delivery contracts, national freight lines.
-- Our Value Advantage: Local roasted-to-order scheduling, custom branding options, zero transit delays.`;
+- Our Value Advantage (${brand}): Local roasted-to-order scheduling, custom branding options, zero transit delays.`;
 
     case "followup_sequence":
       return `3-STEP B2B FOLLOW-UP SEQUENCE:
 
-Step 1 (Day 1 - WhatsApp Direct):
-"Hi ${contactPerson}, hope you're well! Just checking if the sample pack of ${products} arrived safely at your office."
+Step 1 (Day 1 - WhatsApp Direct from ${brand}):
+"Hi ${contactPerson}, hope you're well! Just checking if the sample pack of ${products} from our team at ${brand} arrived safely at your office."
 
 Step 2 (Day 4 - Email pitch):
 Subject: Wholesale volume rates for ${businessName}
@@ -108,7 +109,7 @@ Step 3 (Day 7 - Call check):
 "Hi ${contactPerson}, just calling to see if you had any questions on the pricing sheet we sent over."`;
 
     default:
-      return `Sales outreach copy draft for ${businessName}. Contact person is ${contactPerson}.`;
+      return `Sales outreach copy draft for ${businessName} from ${brand}. Contact person is ${contactPerson}.`;
   }
 }
 
@@ -117,11 +118,11 @@ export const AIService = {
    * Securely invokes Supabase Edge Function to generate sales copy using server-side Gemini.
    * Gracefully falls back to local rule-based text generation if the function is not deployed or fails.
    */
-  async generateSalesCopy({ leadId, promptType, organizationId, userId }) {
+  async generateSalesCopy({ leadId, promptType, organizationId, userId, companyDetails }) {
     try {
       console.log(`[AIService] Invoking generate-sales-copy Edge Function...`);
       const { data, error } = await supabase.functions.invoke("generate-sales-copy", {
-        body: { leadId, promptType, organizationId, userId }
+        body: { leadId, promptType, organizationId, userId, companyDetails }
       });
 
       if (error) throw error;
@@ -141,7 +142,7 @@ export const AIService = {
       
       // Fetch lead details locally to feed the fallback generator
       const lead = await getLead(leadId);
-      const text = `[Local Fallback Mode — AI provider is not configured.]\nThis is a rule-based template fallback, NOT a live AI-generated response.\n\n----------------------------------------\n\n` + localFallbackGenerator(lead, promptType);
+      const text = `[Local Fallback Mode — AI provider is not configured.]\nThis is a rule-based template fallback, NOT a live AI-generated response.\n\n----------------------------------------\n\n` + localFallbackGenerator(lead, promptType, companyDetails);
       
       return {
         text,
@@ -206,6 +207,18 @@ export const AIService = {
       console.log(`[AIService] Edge Function returned prospects text:`, data.text);
       
       let cleanText = data.text.trim();
+      
+      // If it is wrapped in double quotes (often happens with stringified json outputs)
+      if (cleanText.startsWith('"') && cleanText.endsWith('"')) {
+        try {
+          cleanText = JSON.parse(cleanText);
+        } catch (e) {
+          cleanText = cleanText.substring(1, cleanText.length - 1);
+        }
+        cleanText = cleanText.trim();
+      }
+      
+      // Strip markdown code block wrappers
       if (cleanText.startsWith("```json")) {
         cleanText = cleanText.substring(7);
       } else if (cleanText.startsWith("```")) {
@@ -215,6 +228,23 @@ export const AIService = {
         cleanText = cleanText.substring(0, cleanText.length - 3);
       }
       cleanText = cleanText.trim();
+      
+      // Double check in case of nested quotes
+      if (cleanText.startsWith('"') && cleanText.endsWith('"')) {
+        try {
+          cleanText = JSON.parse(cleanText);
+        } catch (e) {
+          cleanText = cleanText.substring(1, cleanText.length - 1);
+        }
+        cleanText = cleanText.trim();
+      }
+
+      // If there are escaped double quotes \" inside, replace them with "
+      if (cleanText.includes('\\"')) {
+        try {
+          cleanText = cleanText.replace(/\\"/g, '"').replace(/\\n/g, '\n');
+        } catch(e) {}
+      }
 
       const parsedArray = JSON.parse(cleanText);
       if (Array.isArray(parsedArray)) {

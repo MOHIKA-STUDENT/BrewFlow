@@ -47,6 +47,10 @@ export default function AIAssistant() {
   const [savedTimeline, setSavedTimeline] = useState(false);
   const [error, setError] = useState("");
 
+  const [companyDetails, setCompanyDetails] = useState(() => {
+    return localStorage.getItem("brewflow_ai_company_details") || "";
+  });
+
   // ChatGPT History logs
   const [historyLogs, setHistoryLogs] = useState([]);
 
@@ -71,6 +75,16 @@ export default function AIAssistant() {
       })
       .catch((err) => console.error("Failed to load history logs:", err));
   }, [organization, generating]); // Reload history when a new copy is generated!
+
+  // Prefill companyDetails from organization if not set in local storage
+  useEffect(() => {
+    if (organization && !companyDetails) {
+      const prefilled = organization.business_category
+        ? `${organization.name} - supplying premium ${organization.business_category} wholesale`
+        : `${organization.name} - wholesale distributor`;
+      setCompanyDetails(prefilled);
+    }
+  }, [organization]);
 
   // Load selected lead details
   useEffect(() => {
@@ -102,7 +116,8 @@ export default function AIAssistant() {
         leadId: selectedLeadId,
         promptType: activePromptId,
         organizationId: organization.id,
-        userId: user.id
+        userId: user.id,
+        companyDetails: companyDetails.trim()
       });
 
       setOutput(result.text);
@@ -111,6 +126,9 @@ export default function AIAssistant() {
         model: result.model,
         fallback: result.fallback
       });
+
+      // Save to localStorage
+      localStorage.setItem("brewflow_ai_company_details", companyDetails.trim());
     } catch (err) {
       setError("Failed to run copywriter: " + err.message);
     } finally {
@@ -282,6 +300,26 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role
       {/* Right 3-columns: Main Chat Generation Hub */}
       <div className="lg:col-span-3 rounded-2xl border border-[#14213d]/5 dark:border-white/5 bg-white/70 dark:bg-[#111827]/70 p-6 flex flex-col space-y-5 shadow-sm backdrop-blur-md">
         
+        {/* Brand Profile Details Card */}
+        <div className="p-4 rounded-xl border border-[#d8a64c]/15 bg-[#f8f7f4]/40 dark:bg-black/15 shadow-inner space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Building size={12} className="text-[#d8a64c]" />
+              <span className="text-[10px] font-bold text-[#14213d] dark:text-[#f9fafb] uppercase tracking-widest">
+                Your Brand Profile & Offerings
+              </span>
+            </div>
+            <span className="text-[9px] font-mono text-slate-400">Used to personalize AI tone</span>
+          </div>
+          <textarea
+            value={companyDetails}
+            onChange={(e) => setCompanyDetails(e.target.value)}
+            placeholder="Describe your brand & products (e.g., 'Organic milk distributor supplying fresh milk and dairy to local coffee shops & bakeries')"
+            rows={2}
+            className="w-full p-3 rounded-lg border border-[#14213d]/5 dark:border-white/5 bg-white dark:bg-[#1f2937]/40 text-xs outline-none focus:border-[#d8a64c] text-[#14213d] dark:text-[#f9fafb] transition-all font-sans leading-relaxed resize-none shadow-sm"
+          />
+        </div>
+
         {/* Select Target Lead */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div className="md:col-span-2 space-y-1.5">
