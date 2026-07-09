@@ -8,113 +8,151 @@ const corsHeaders = {
 }
 
 const PROMPT_TEMPLATES = {
-  cold_email: (lead: any) => `
-    Write a short, highly compelling B2B cold email to a potential wholesale customer.
-    Company Name: ${lead.business_name}
-    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
-    Business Type: ${lead.business_type || 'Retailer'}
-    City: ${lead.city || 'their city'}
-    Interested Products: ${lead.interested_products || 'our wholesale catalog'}
-    Current Supplier: ${lead.current_supplier || 'unknown supplier'}
-    General Notes: ${lead.general_notes || ''}
+  cold_email: (lead: any, companyDetails: string) => `
+    Write a short, highly compelling B2B cold outreach email sent by our company to a potential wholesale customer.
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Target Company Name: ${lead.business_name}
+    - Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    - Business Type: ${lead.business_type || 'Retailer'}
+    - City: ${lead.city || 'their city'}
+    - Products they need/interested in: ${lead.interested_products || 'wholesale supplies'}
+    - Target's Current Supplier: ${lead.current_supplier || 'unknown supplier'}
+    - Lead Notes: ${lead.general_notes || ''}
 
-    Structure:
+    Structure & Tone:
     - Subject: Needs a highly personalized, clickable B2B subject line.
     - Salutation: Addressed to the contact person.
-    - Body: Under 150 words. Focus on how we can improve their supply quality and margins.
-    - CTA: Call to action to send product samples.
+    - Body: Under 150 words. Write from the perspective of our company reaching out to them. Pitch our specific offerings (${companyDetails || 'our wholesale catalog'}) to fulfill their product needs (${lead.interested_products || 'wholesale supplies'}), explaining why we are a better fit than their current supplier (${lead.current_supplier || 'unknown supplier'}).
+    - CTA: Call to action to send free product samples or schedule a brief introductory call.
   `,
-  whatsapp_followup: (lead: any) => `
-    Write a short, casual B2B WhatsApp follow-up outreach message.
-    Company Name: ${lead.business_name}
-    Contact Person: ${lead.contact_person || 'there'}
-    Interested Products: ${lead.interested_products || 'wholesale supplies'}
+  whatsapp_followup: (lead: any, companyDetails: string) => `
+    Write a short, casual B2B WhatsApp follow-up outreach message sent by our company to a potential customer.
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Target Company Name: ${lead.business_name}
+    - Contact Person: ${lead.contact_person || 'there'}
+    - Products they need/interested in: ${lead.interested_products || 'wholesale supplies'}
     
     Guidelines:
+    - Write as a sales rep of our company reaching out.
     - Keep it under 60 words.
     - Warm, friendly, and brief.
     - Ask if they had a chance to look at our samples or price catalog.
     - Use a few emojis.
   `,
-  call_script: (lead: any) => `
-    Write a cold call opening script (first 30-45 seconds hook) for a wholesale sales representative.
-    Company Name: ${lead.business_name}
-    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
-    Business Type: ${lead.business_type || 'Retailer'}
-    Current Supplier: ${lead.current_supplier || 'unknown'}
+  call_script: (lead: any, companyDetails: string) => `
+    Write a cold call opening script (first 30-45 seconds hook) for our wholesale sales representative reaching out to a target lead.
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Target Company Name: ${lead.business_name}
+    - Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    - Business Type: ${lead.business_type || 'Retailer'}
+    - City: ${lead.city || 'their city'}
+    - Current Supplier: ${lead.current_supplier || 'unknown'}
 
     Structure:
-    - Intro: Greeting, identify self and brand, state reason for call.
-    - Hook: Mentioning their business in ${lead.city || 'their area'} and address their probable pain points with their ${lead.current_supplier ? `current supplier (${lead.current_supplier})` : 'current supplier'}.
-    - Ask: Low-friction CTA (e.g. permission to email a menu/catalog or ship a sample pack).
+    - Intro: Greeting, identify self and our brand (${companyDetails || 'our wholesale brand'}), state reason for call.
+    - Hook: Mention their business in ${lead.city || 'their area'} and address probable pain points with their current supplier (${lead.current_supplier || 'their supplier'}).
+    - Ask: Low-friction CTA (e.g., permission to email our catalog or ship a sample pack).
   `,
-  meeting_summary: (lead: any) => `
-    Generate a concise B2B meeting summary based on the notes below.
-    Lead Name: ${lead.business_name}
-    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
-    Lead Notes: ${lead.general_notes || 'No recent notes logged.'}
+  meeting_summary: (lead: any, companyDetails: string) => `
+    Generate a concise B2B meeting summary of our conversation with this lead.
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Lead Name: ${lead.business_name}
+    - Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    - Lead Notes: ${lead.general_notes || 'No recent notes logged.'}
 
     Structure:
     - Bullets for key discussion items.
-    - Identified pain points/interests.
+    - Identified pain points/interests in our products.
     - Clear action items.
   `,
-  lead_summary: (lead: any) => `
-    Generate a high-level executive B2B lead summary.
-    Lead Name: ${lead.business_name}
-    Type: ${lead.business_type || 'Wholesale lead'}
-    City: ${lead.city || 'unknown'}
-    Potential Revenue: ${lead.potential_monthly_revenue ? `$${lead.potential_monthly_revenue}` : 'unknown'}
-    Current Supplier: ${lead.current_supplier || 'unknown'}
-    General Notes: ${lead.general_notes || ''}
+  lead_summary: (lead: any, companyDetails: string) => `
+    Generate a high-level executive B2B lead summary outlining the opportunity for our company.
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Lead Name: ${lead.business_name}
+    - Type: ${lead.business_type || 'Wholesale lead'}
+    - City: ${lead.city || 'unknown'}
+    - Potential Revenue: ${lead.potential_monthly_revenue ? `$${lead.potential_monthly_revenue}` : 'unknown'}
+    - Current Supplier: ${lead.current_supplier || 'unknown'}
+    - General Notes: ${lead.general_notes || ''}
 
     Guidelines:
     - Summarize in one concise paragraph.
-    - Highlight the estimated deal value and core opportunity.
+    - Highlight the estimated deal value and core opportunity for our product.
   `,
-  next_best_action: (lead: any) => `
-    Provide 3 actionable next steps for a sales representative to advance this deal.
-    Lead Name: ${lead.business_name}
-    Status: ${lead.status || 'New Lead'}
-    Next Follow-up Scheduled: ${lead.next_follow_up_date || 'None'}
-    General Notes: ${lead.general_notes || ''}
+  next_best_action: (lead: any, companyDetails: string) => `
+    Provide 3 actionable next steps for our sales representative to advance this deal.
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Lead Name: ${lead.business_name}
+    - Status: ${lead.status || 'New Lead'}
+    - Next Follow-up Scheduled: ${lead.next_follow_up_date || 'None'}
+    - General Notes: ${lead.general_notes || ''}
 
     Guidelines:
     - Output exactly 3 bullet points.
-    - Base actions on lead status and notes.
+    - Base actions on lead status, notes, and how to pitch our product.
   `,
-  prospect_research: (lead: any) => `
+  prospect_research: (lead: any, companyDetails: string) => `
     Generate a detailed prospect research report for our sales representative.
-    Company Name: ${lead.business_name}
-    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
-    Business Type: ${lead.business_type || 'Retailer'}
-    City: ${lead.city || 'their city'}
-    Interested Products: ${lead.interested_products || 'our wholesale catalog'}
-    Current Supplier: ${lead.current_supplier || 'unknown supplier'}
-    General Notes: ${lead.general_notes || ''}
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Company Name: ${lead.business_name}
+    - Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    - Business Type: ${lead.business_type || 'Retailer'}
+    - City: ${lead.city || 'their city'}
+    - Interested Products: ${lead.interested_products || 'our wholesale catalog'}
+    - Current Supplier: ${lead.current_supplier || 'unknown supplier'}
+    - General Notes: ${lead.general_notes || ''}
 
     Structure:
     - Business Overview: Summary of what they do and their footprint in ${lead.city || 'their city'}.
     - Key Pain Points: What issues they might have with their current supplier (${lead.current_supplier || 'unknown'}).
-    - Recommended Pitch Angle: How we should position our wholesale catalog and interested products (${lead.interested_products || 'our catalog'}) to win their business.
+    - Recommended Pitch Angle: How we should position our offering (${companyDetails || 'our product'}) to win their business.
   `,
-  competitor_analysis: (lead: any) => `
+  competitor_analysis: (lead: any, companyDetails: string) => `
     Generate a B2B competitor gap analysis comparing our brand against their current supplier.
-    Company Name: ${lead.business_name}
-    Interested Products: ${lead.interested_products || 'our wholesale catalog'}
-    Current Supplier: ${lead.current_supplier || 'unknown supplier'}
-    General Notes: ${lead.general_notes || ''}
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Company Name: ${lead.business_name}
+    - Interested Products: ${lead.interested_products || 'our wholesale catalog'}
+    - Current Supplier: ${lead.current_supplier || 'unknown supplier'}
+    - General Notes: ${lead.general_notes || ''}
 
     Structure:
-    - Competitor Profile: Summary of their current supplier (${lead.current_supplier || 'unknown'}) and their strengths.
-    - Our Key Value Advantages: How we can beat them on quality, pricing margins, roasted-to-order scheduling, or delivery reliability for ${lead.interested_products || 'their needs'}.
+    - Competitor Profile: Summary of their current supplier (${lead.current_supplier || 'unknown'}) and strengths.
+    - Our Key Value Advantages: How we (${companyDetails || 'our brand'}) beat them on quality, pricing margins, roasted-to-order scheduling, or delivery reliability for their needs.
     - Objection Handling: Quick responses for the rep when the prospect says they are happy with their current supplier.
   `,
-  followup_sequence: (lead: any) => `
+  followup_sequence: (lead: any, companyDetails: string) => `
     Generate a 3-step multi-channel B2B follow-up sequence.
-    Company Name: ${lead.business_name}
-    Contact Person: ${lead.contact_person || 'Purchasing Manager'}
-    Interested Products: ${lead.interested_products || 'wholesale supplies'}
+    
+    Our Company Brand & Offerings: ${companyDetails || 'A premium wholesale supplier'}
+    
+    Target Customer details:
+    - Company Name: ${lead.business_name}
+    - Contact Person: ${lead.contact_person || 'Purchasing Manager'}
+    - Interested Products: ${lead.interested_products || 'wholesale supplies'}
     
     Structure:
     - Step 1 (Day 1 - WhatsApp Outreach): Under 50 words, casual and friendly, checking if their wholesale sample pack arrived.
@@ -132,29 +170,57 @@ async function callUniversalAI(apiKey: string, promptText: string): Promise<{ te
 
   // 1. OpenRouter (Check first since keys start with sk-or-v1-)
   if (cleanKey.startsWith("sk-or-v1-")) {
-    console.log("[Universal AI] Routing to OpenRouter Llama-3.2 3B Free...");
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${cleanKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://brewflow.ai",
-        "X-Title": "BrewFlow AI"
-      },
-      body: JSON.stringify({
-        model: "meta-llama/llama-3.2-3b-instruct:free",
-        messages: [{ role: "user", content: promptText }]
-      })
-    });
-    if (!response.ok) {
-      throw new Error(`OpenRouter returned error: ${response.status} - ${await response.text()}`);
+    console.log("[Universal AI] Routing to OpenRouter with fallback models...");
+    const modelsToTry = [
+      "meta-llama/llama-3.2-3b-instruct:free",
+      "google/gemma-4-31b-it:free",
+      "meta-llama/llama-3.3-70b-instruct:free",
+      "qwen/qwen3-coder:free",
+      "openrouter/free"
+    ];
+
+    let lastError = null;
+    for (const model of modelsToTry) {
+      try {
+        console.log(`[Universal AI] Attempting model: ${model}`);
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${cleanKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://brewflow.ai",
+            "X-Title": "BrewFlow AI"
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: "user", content: promptText }]
+          })
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Status ${response.status} - ${errText}`);
+        }
+
+        const data = await response.json();
+        const text = data.choices?.[0]?.message?.content || "";
+        if (!text) {
+          throw new Error("Returned empty response text");
+        }
+
+        console.log(`[Universal AI] Model ${model} succeeded!`);
+        return {
+          text,
+          provider: "OpenRouter",
+          model: model
+        };
+      } catch (err: any) {
+        console.warn(`[Universal AI] Model ${model} failed: ${err.message || err}`);
+        lastError = err;
+      }
     }
-    const data = await response.json();
-    return {
-      text: data.choices?.[0]?.message?.content || "",
-      provider: "OpenRouter",
-      model: "llama-3.2-3b-free"
-    };
+
+    throw new Error(`All OpenRouter free models failed. Last error: ${lastError?.message || lastError}`);
   }
 
   // 2. Anthropic (Claude)
@@ -327,7 +393,7 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
-      promptText = promptTemplateFn(lead)
+      promptText = promptTemplateFn(lead, companyDetails)
     } else {
       // 100% Free Scouting Sourcing: Overpass API & Nominatim
       let scoutedElements = [];
