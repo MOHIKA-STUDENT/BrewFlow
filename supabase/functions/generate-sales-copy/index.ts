@@ -410,7 +410,33 @@ serve(async (req) => {
           const lon = parseFloat(geocodeData[0].lon);
           console.log(`[Edge Scout] Resolved coordinates: lat=${lat}, lon=${lon}`);
           
-          const query = `[out:json];(node[amenity=cafe](around:15000,${lat},${lon});node[amenity=bakery](around:15000,${lat},${lon}););out 10;`;
+          const typeLower = (businessType || "").toLowerCase();
+          let tags = "";
+          
+          if (typeLower.includes("cafe") || typeLower.includes("coffee")) {
+            tags += `node[amenity=cafe](around:15000,${lat},${lon});`;
+          }
+          if (typeLower.includes("bakery") || typeLower.includes("bake") || typeLower.includes("cake") || typeLower.includes("bread")) {
+            tags += `node[shop=bakery](around:15000,${lat},${lon});node[amenity=bakery](around:15000,${lat},${lon});`;
+          }
+          if (typeLower.includes("ice cream") || typeLower.includes("icecream") || typeLower.includes("gelato") || typeLower.includes("parlor")) {
+            tags += `node[amenity=ice_cream](around:15000,${lat},${lon});`;
+          }
+          if (typeLower.includes("sweet") || typeLower.includes("candy") || typeLower.includes("confectionery") || typeLower.includes("pastry") || typeLower.includes("chocolate") || typeLower.includes("dessert")) {
+            tags += `node[shop=confectionery](around:15000,${lat},${lon});node[shop=pastry](around:15000,${lat},${lon});`;
+          }
+          if (typeLower.includes("restaurant") || typeLower.includes("food") || typeLower.includes("dining") || typeLower.includes("hotel") || typeLower.includes("bistro") || typeLower.includes("eatery")) {
+            tags += `node[amenity=restaurant](around:15000,${lat},${lon});`;
+          }
+          if (typeLower.includes("tea") || typeLower.includes("chai") || typeLower.includes("juice") || typeLower.includes("beverage")) {
+            tags += `node[amenity=cafe](around:15000,${lat},${lon});node[amenity=fast_food](around:15000,${lat},${lon});`;
+          }
+
+          if (!tags) {
+            tags = `node[amenity=cafe](around:15000,${lat},${lon});node[shop=bakery](around:15000,${lat},${lon});node[amenity=restaurant](around:15000,${lat},${lon});`;
+          }
+
+          const query = `[out:json];(${tags});out 15;`;
           const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
           
           const overpassRes = await fetch(overpassUrl, {
@@ -419,14 +445,28 @@ serve(async (req) => {
           const overpassData = await overpassRes.json();
           const elements = overpassData.elements || [];
           
-          scoutedElements = elements.map((el: any) => ({
-            business_name: el.tags.name || "Local Café",
-            business_type: el.tags.amenity === "cafe" ? "Specialty Café" : "Bakery",
-            address: `${el.tags['addr:street'] || ''} ${el.tags['addr:suburb'] || ''} ${targetLocation}`.trim(),
-            phone: el.tags.phone || el.tags['contact:phone'] || "Not Available",
-            email: el.tags.email || el.tags['contact:email'] || "Not Available",
-            website: el.tags.website || "Not Available"
-          })).filter((p: any) => p.business_name !== "Local Café");
+          scoutedElements = elements.map((el: any) => {
+            let derivedType = "B2B Lead";
+            const amenity = el.tags.amenity;
+            const shop = el.tags.shop;
+            
+            if (amenity === "cafe") derivedType = "Specialty Café";
+            else if (amenity === "restaurant") derivedType = "Restaurant";
+            else if (amenity === "ice_cream") derivedType = "Ice Cream Parlor";
+            else if (amenity === "bakery" || shop === "bakery") derivedType = "Bakery";
+            else if (shop === "confectionery" || shop === "pastry") derivedType = "Sweet & Confectionery Shop";
+            else if (shop) derivedType = shop.charAt(0).toUpperCase() + shop.slice(1);
+            else if (amenity) derivedType = amenity.charAt(0).toUpperCase() + amenity.slice(1);
+
+            return {
+              business_name: el.tags.name || "Local Business",
+              business_type: derivedType,
+              address: `${el.tags['addr:street'] || ''} ${el.tags['addr:suburb'] || ''} ${targetLocation}`.trim(),
+              phone: el.tags.phone || el.tags['contact:phone'] || "Not Available",
+              email: el.tags.email || el.tags['contact:email'] || "Not Available",
+              website: el.tags.website || "Not Available"
+            };
+          }).filter((p: any) => p.business_name !== "Local Business");
         }
       } catch (scoutErr) {
         console.error(`[Edge Scout] Overpass API query failed, using AI baseline:`, scoutErr);
